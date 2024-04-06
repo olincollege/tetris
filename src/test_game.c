@@ -5,6 +5,8 @@ int game_running = 0;
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
+int last_frame_time = 0;
+
 struct ball {
   float x;
   float y;
@@ -58,8 +60,14 @@ void setup() {
 }
 
 void update() {
-  ball.x += 1;
-  ball.y += 1;
+  // delta time, converted to seconds
+  float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
+
+  last_frame_time = SDL_GetTicks();
+
+  // ball moves 50 px per sec in x and y
+  ball.x += 50 * delta_time;
+  ball.y += 50 * delta_time;
 }
 
 void render() {
