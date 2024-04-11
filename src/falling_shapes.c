@@ -84,7 +84,7 @@ void process_input() {
   }
 }
 
-void setup() {}
+void setup() { shuffle_bag(bag, 7); }
 
 void update() {
   // delta time, converted to seconds
@@ -95,15 +95,18 @@ void update() {
   if (position[1] > 19) {
     position[1] = 0;
   } else {
-    position[1] += 1 * delta_time;
+    position[1] += 2 * delta_time;
   }
 }
+
+int current_index = 0;
 
 void render() {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
-  const tetromino shape = tetrominos[0];
+  // Render the tetromino at the current index in the bag
+  const tetromino shape = tetrominos[bag[current_index]];
 
   SDL_SetRenderDrawColor(renderer, shape.color.r, shape.color.g, shape.color.b,
                          shape.color.a);
@@ -121,6 +124,17 @@ void render() {
   }
 
   SDL_RenderPresent(renderer);
+
+  // If the current tetromino has left the screen, move to the next shape
+  if (position[1] > 19) {
+    current_index++;
+    if (current_index >= 7) {
+      // If all tetrominos have been rendered, shuffle the bag
+      shuffle_bag(bag, 7);  // Assuming there are 7 tetrominos
+      current_index = 0;
+    }
+    position[1] = 0;
+  }
 }
 
 void destroy_window() {
