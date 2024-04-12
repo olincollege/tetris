@@ -13,25 +13,75 @@ float position[] = {3, 0};
 int bag[] = {0, 1, 2, 3, 4, 5, 6};
 
 typedef struct tetromino {
-  int shape[4][4];
+  int rows;
+  int cols;
+  int** shape;
   SDL_Color color;
 } tetromino;
 
+int** make_pointer_to_tetromino_shape(int height, int width) {
+  int* shape = (int*)malloc(sizeof(int) * height * width);
+  return &shape;
+}
+
+void free_tetromino_shape(int** shape) { free(*shape); }
+
+int* I[2][4] = {{0, 0, 0, 0}, {1, 1, 1, 1}};
+int* J[2][3] = {{1, 0, 0}, {1, 1, 1}};
+int* L[2][3] = {{0, 0, 1}, {1, 1, 1}};
+int* S[2][3] = {{0, 1, 1}, {1, 1, 0}};
+int* O[2][2] = {{1, 1}, {1, 1}};
+int* Z[2][3] = {{1, 1, 0}, {0, 1, 1}};
+int* T[2][3] = {{0, 1, 0}, {1, 1, 1}};
+
 tetromino tetrominos[7] = {
-    {.shape = {{1, 1, 1, 1}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
+    // I
+    {.rows = 2,
+     .cols = 4,
+     .shape = &I,
      .color = {.r = 0, .g = 255, .b = 255, .a = 255}},
-    {.shape = {{1, 0, 0, 0}, {1, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
+    // J
+    {.rows = 2,
+     .cols = 3,
+     .shape = &J,
      .color = {.r = 0, .g = 0, .b = 255, .a = 255}},
-    {.shape = {{0, 0, 1, 0}, {1, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
+    // L
+    {.rows = 2,
+     .cols = 3,
+     .shape = &L,
      .color = {.r = 255, .g = 165, .b = 0, .a = 255}},
-    {.shape = {{1, 1, 0, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
+    // O
+    {.rows = 2,
+     .cols = 2,
+     .shape = &O,
      .color = {.r = 0, .g = 255, .b = 255, .a = 0}},
-    {.shape = {{0, 1, 1, 0}, {1, 1, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
+    // S
+    {.rows = 2,
+     .cols = 3,
+     .shape = &S,
      .color = {.r = 0, .g = 255, .b = 0, .a = 255}},
-    {.shape = {{0, 1, 0, 0}, {1, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
+    // T
+    {.rows = 2,
+     .cols = 3,
+     .shape = &T,
      .color = {.r = 128, .g = 0, .b = 255, .a = 255}},
-    {.shape = {{1, 1, 0, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
+    // Z
+    {.rows = 2,
+     .cols = 3,
+     .shape = &Z,
      .color = {.r = 255, .g = 0, .b = 0, .a = 255}}};
+
+int board_state[20][10] = {
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
 
 void shuffle_bag(int* array, size_t n) {
   if (n > 1) {
@@ -90,12 +140,15 @@ void update() {
   // delta time, converted to seconds
   float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
 
-  last_frame_time = SDL_GetTicks();
+  if (delta_time >= 1) {
+    last_frame_time = SDL_GetTicks();
 
-  if (position[1] > 19) {
-    position[1] = 0;
-  } else {
-    position[1] += 2 * delta_time;
+    const int blocks_per_sec = 1;
+    if (position[1] > 19) {
+      position[1] = 0;
+    } else {
+      position[1] += blocks_per_sec * delta_time;
+    }
   }
 }
 
@@ -111,8 +164,8 @@ void render() {
   SDL_SetRenderDrawColor(renderer, shape.color.r, shape.color.g, shape.color.b,
                          shape.color.a);
 
-  for (int i = 0; i < 4; i++) {
-    for (int j = 0; j < 4; j++) {
+  for (int i = 0; i < shape.rows; i++) {
+    for (int j = 0; j < shape.cols; j++) {
       if (shape.shape[j][i] != 0) {
         SDL_Rect shape_rect = {
             (int)(position[0] * SQUARE_WIDTH + i * SQUARE_WIDTH),
