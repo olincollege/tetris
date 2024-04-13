@@ -123,19 +123,15 @@ void process_input() {
 void setup() { shuffle_bag(bag, 7); }
 
 int check_collisions(void) {
-  const tetromino shape = tetrominos[current_index];
+  const tetromino shape = tetrominos[bag[current_index]];
 
   for (int i = 0; i < shape.cols; i++) {
     for (int j = 0; j < shape.rows; j++) {
       if (shape.shape[j][i] == 1) {
-        printf("Board State: %d\n",
-               board_state[(int)position[1] + j + 1][(int)position[0] + i]);
         if (board_state[(int)position[1] + j + 1][(int)position[0] + i] != 0) {
-          printf("Square below is filled.");
           return 1;
         }
         if ((int)position[1] + shape.rows == 20) {
-          printf("Hit the bottom.");
           return 1;
         }
       }
@@ -145,7 +141,7 @@ int check_collisions(void) {
 }
 
 void update_board(void) {
-  const tetromino shape = tetrominos[current_index];
+  const tetromino shape = tetrominos[bag[current_index]];
 
   for (int i = 0; i < shape.cols; i++) {
     for (int j = 0; j < shape.rows; j++) {
@@ -166,10 +162,16 @@ void update() {
     const int blocks_per_sec = 1;
 
     int collision = check_collisions();
-    printf("Collision: %d", collision);
 
     if (collision) {
       update_board();
+      position[1] = 0;
+      current_index++;
+      if (current_index >= 7) {
+        // If all tetrominos have been rendered, shuffle the bag
+        shuffle_bag(bag, 7);  // Assuming there are 7 tetrominos
+        current_index = 0;
+      }
       position[1] = 0;
     } else {
       position[1] += blocks_per_sec * delta_time;
@@ -184,9 +186,23 @@ void render() {
   // Render the tetromino at the current index in the bag
   const tetromino shape = tetrominos[bag[current_index]];
 
+  for (int i = 0; i < 10; i++) {
+    for (int j = 0; j < 20; j++) {
+      SDL_Rect shape_rect = {(int)(i * SQUARE_WIDTH), (int)(j * SQUARE_WIDTH),
+                             SQUARE_WIDTH, SQUARE_WIDTH};
+
+      if (board_state[j][i] == 1) {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+      } else {
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+      }
+      SDL_RenderFillRect(renderer, &shape_rect);
+    }
+  }
+
   SDL_SetRenderDrawColor(renderer, shape.color.r, shape.color.g, shape.color.b,
                          shape.color.a);
-
   for (int i = 0; i < shape.cols; i++) {
     for (int j = 0; j < shape.rows; j++) {
       if (shape.shape[j][i] == 1) {
@@ -200,17 +216,6 @@ void render() {
   }
 
   SDL_RenderPresent(renderer);
-
-  // If the current tetromino has left the screen, move to the next shape
-  if (position[1] > 19) {
-    current_index++;
-    if (current_index >= 7) {
-      // If all tetrominos have been rendered, shuffle the bag
-      shuffle_bag(bag, 7);  // Assuming there are 7 tetrominos
-      current_index = 0;
-    }
-    position[1] = 0;
-  }
 }
 
 void destroy_window() {
