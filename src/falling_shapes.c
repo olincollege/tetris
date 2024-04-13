@@ -15,7 +15,7 @@ int bag[] = {0, 1, 2, 3, 4, 5, 6};
 typedef struct tetromino {
   int rows;
   int cols;
-  int (*shape)[][];
+  int shape[4][4];
   SDL_Color color;
 } tetromino;
 
@@ -29,47 +29,48 @@ typedef struct tetromino {
 int I[2][4] = {{0, 0, 0, 0}, {1, 1, 1, 1}};
 int J[2][3] = {{1, 0, 0}, {1, 1, 1}};
 int L[2][3] = {{0, 0, 1}, {1, 1, 1}};
-int S[2][3] = {{0, 1, 1}, {1, 1, 0}};
 int O[2][2] = {{1, 1}, {1, 1}};
-int Z[2][3] = {{1, 1, 0}, {0, 1, 1}};
+int S[2][3] = {{0, 1, 1}, {1, 1, 0}};
 int T[2][3] = {{0, 1, 0}, {1, 1, 1}};
+int Z[2][3] = {{1, 1, 0}, {0, 1, 1}};
+
 int* tetromino_shape_templates[] = {I, J, L, O, S, T, Z};
 
 tetromino tetrominos[7] = {
     // I
     {.rows = 2,
      .cols = 4,
-     .shape = I,
+     .shape = {{0, 0, 0, 0}, {1, 1, 1, 1}},
      .color = {.r = 0, .g = 255, .b = 255, .a = 255}},
     // J
     {.rows = 2,
      .cols = 3,
-     .shape = J,
+     .shape = {{1, 0, 0}, {1, 1, 1}},
      .color = {.r = 0, .g = 0, .b = 255, .a = 255}},
     // L
     {.rows = 2,
      .cols = 3,
-     .shape = L,
+     .shape = {{0, 0, 1}, {1, 1, 1}},
      .color = {.r = 255, .g = 165, .b = 0, .a = 255}},
     // O
     {.rows = 2,
      .cols = 2,
-     .shape = O,
-     .color = {.r = 0, .g = 255, .b = 255, .a = 0}},
+     .shape = {{1, 1}, {1, 1}},
+     .color = {.r = 255, .g = 255, .b = 0, .a = 255}},
     // S
     {.rows = 2,
      .cols = 3,
-     .shape = S,
+     .shape = {{0, 1, 1}, {1, 1, 0}},
      .color = {.r = 0, .g = 255, .b = 0, .a = 255}},
     // T
     {.rows = 2,
      .cols = 3,
-     .shape = T,
+     .shape = {{0, 1, 0}, {1, 1, 1}},
      .color = {.r = 128, .g = 0, .b = 255, .a = 255}},
     // Z
     {.rows = 2,
      .cols = 3,
-     .shape = Z,
+     .shape = {{1, 1, 0}, {0, 1, 1}},
      .color = {.r = 255, .g = 0, .b = 0, .a = 255}}};
 
 void allocate_tetromino_shape(tetromino tetromino, int tetromino_index) {
@@ -158,7 +159,7 @@ void update() {
   if (delta_time >= 1) {
     last_frame_time = SDL_GetTicks();
 
-    const int blocks_per_sec = 1;
+    const int blocks_per_sec = 5;
     if (position[1] > 19) {
       position[1] = 0;
     } else {
@@ -179,9 +180,9 @@ void render() {
   SDL_SetRenderDrawColor(renderer, shape.color.r, shape.color.g, shape.color.b,
                          shape.color.a);
 
-  for (int i = 0; i < shape.rows; i++) {
-    for (int j = 0; j < shape.cols; j++) {
-      if ((*shape.shape)[j] != 0) {
+  for (int i = 0; i < shape.cols; i++) {
+    for (int j = 0; j < shape.rows; j++) {
+      if (shape.shape[j][i] == 1) {
         SDL_Rect shape_rect = {
             (int)(position[0] * SQUARE_WIDTH + i * SQUARE_WIDTH),
             (int)(position[1] * SQUARE_WIDTH + j * SQUARE_WIDTH), SQUARE_WIDTH,
