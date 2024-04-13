@@ -15,61 +15,71 @@ int bag[] = {0, 1, 2, 3, 4, 5, 6};
 typedef struct tetromino {
   int rows;
   int cols;
-  int** shape;
+  int (*shape)[][];
   SDL_Color color;
 } tetromino;
 
-int** make_pointer_to_tetromino_shape(int height, int width) {
-  int* shape = (int*)malloc(sizeof(int) * height * width);
-  return &shape;
-}
+// int* make_pointer_to_tetromino_shape(int height, int width) {
+//   int* shape = (int*)malloc(height * sizeof(int[width]));
+//   return shape;
+// }
 
-void free_tetromino_shape(int** shape) { free(*shape); }
+// void free_tetromino_shape(int* shape) { free(shape); }
 
-int* I[2][4] = {{0, 0, 0, 0}, {1, 1, 1, 1}};
-int* J[2][3] = {{1, 0, 0}, {1, 1, 1}};
-int* L[2][3] = {{0, 0, 1}, {1, 1, 1}};
-int* S[2][3] = {{0, 1, 1}, {1, 1, 0}};
-int* O[2][2] = {{1, 1}, {1, 1}};
-int* Z[2][3] = {{1, 1, 0}, {0, 1, 1}};
-int* T[2][3] = {{0, 1, 0}, {1, 1, 1}};
+int I[2][4] = {{0, 0, 0, 0}, {1, 1, 1, 1}};
+int J[2][3] = {{1, 0, 0}, {1, 1, 1}};
+int L[2][3] = {{0, 0, 1}, {1, 1, 1}};
+int S[2][3] = {{0, 1, 1}, {1, 1, 0}};
+int O[2][2] = {{1, 1}, {1, 1}};
+int Z[2][3] = {{1, 1, 0}, {0, 1, 1}};
+int T[2][3] = {{0, 1, 0}, {1, 1, 1}};
+int* tetromino_shape_templates[] = {I, J, L, O, S, T, Z};
 
 tetromino tetrominos[7] = {
     // I
     {.rows = 2,
      .cols = 4,
-     .shape = &I,
+     .shape = I,
      .color = {.r = 0, .g = 255, .b = 255, .a = 255}},
     // J
     {.rows = 2,
      .cols = 3,
-     .shape = &J,
+     .shape = J,
      .color = {.r = 0, .g = 0, .b = 255, .a = 255}},
     // L
     {.rows = 2,
      .cols = 3,
-     .shape = &L,
+     .shape = L,
      .color = {.r = 255, .g = 165, .b = 0, .a = 255}},
     // O
     {.rows = 2,
      .cols = 2,
-     .shape = &O,
+     .shape = O,
      .color = {.r = 0, .g = 255, .b = 255, .a = 0}},
     // S
     {.rows = 2,
      .cols = 3,
-     .shape = &S,
+     .shape = S,
      .color = {.r = 0, .g = 255, .b = 0, .a = 255}},
     // T
     {.rows = 2,
      .cols = 3,
-     .shape = &T,
+     .shape = T,
      .color = {.r = 128, .g = 0, .b = 255, .a = 255}},
     // Z
     {.rows = 2,
      .cols = 3,
-     .shape = &Z,
+     .shape = Z,
      .color = {.r = 255, .g = 0, .b = 0, .a = 255}}};
+
+void allocate_tetromino_shape(tetromino tetromino, int tetromino_index) {
+  int** shape = tetromino.shape;
+  int rows = tetromino.rows;
+  int cols = tetromino.cols;
+  *shape = malloc(sizeof(int) * rows * cols);
+  memcpy(*shape, tetromino_shape_templates[tetromino_index],
+         sizeof(int) * rows * cols);
+}
 
 int board_state[20][10] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -134,7 +144,12 @@ void process_input() {
   }
 }
 
-void setup() { shuffle_bag(bag, 7); }
+void setup() {
+  // for (int i = 0; i < 7; i++) {
+  //   allocate_tetromino_shape(tetrominos[i], i);
+  // }
+  shuffle_bag(bag, 7);
+}
 
 void update() {
   // delta time, converted to seconds
@@ -166,7 +181,7 @@ void render() {
 
   for (int i = 0; i < shape.rows; i++) {
     for (int j = 0; j < shape.cols; j++) {
-      if (shape.shape[j][i] != 0) {
+      if ((*shape.shape)[j] != 0) {
         SDL_Rect shape_rect = {
             (int)(position[0] * SQUARE_WIDTH + i * SQUARE_WIDTH),
             (int)(position[1] * SQUARE_WIDTH + j * SQUARE_WIDTH), SQUARE_WIDTH,
