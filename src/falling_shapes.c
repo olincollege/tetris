@@ -13,6 +13,11 @@ float position[] = {3, 0};
 int current_index = 0;
 int bag[] = {0, 1, 2, 3, 4, 5, 6};
 
+typedef struct {
+  int filled;
+  SDL_Color color;
+} BoardCell;
+
 typedef struct tetromino {
   int rows;
   int cols;
@@ -57,17 +62,7 @@ tetromino tetrominos[7] = {
      .shape = {{1, 1, 0}, {0, 1, 1}},
      .color = {.r = 255, .g = 0, .b = 0, .a = 255}}};
 
-int board_state[20][10] = {
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+BoardCell board_state[20][10];
 
 void shuffle_bag(int* array, size_t n) {
   if (n > 1) {
@@ -120,7 +115,14 @@ void process_input() {
   }
 }
 
-void setup() { shuffle_bag(bag, 7); }
+void setup() {
+  shuffle_bag(bag, 7);
+  for (int i = 0; i < 20; i++) {
+    for (int j = 0; j < 10; j++) {
+      board_state[i][j].filled = 0;
+    }
+  }
+}
 
 int check_collisions(void) {
   const tetromino shape = tetrominos[bag[current_index]];
@@ -128,16 +130,17 @@ int check_collisions(void) {
   for (int i = 0; i < shape.cols; i++) {
     for (int j = 0; j < shape.rows; j++) {
       if (shape.shape[j][i] == 1) {
-        if (board_state[(int)position[1] + j + 1][(int)position[0] + i] != 0) {
-          return 1;
+        if (board_state[(int)position[1] + j + 1][(int)position[0] + i]
+                .filled != 0) {
+          return 1;  // Collision with another tetromino
         }
-        if ((int)position[1] + shape.rows == 20) {
-          return 1;
+        if ((int)position[1] + j + 1 >= 20) {
+          return 1;  // Reached the bottom of the board
         }
       }
     }
   }
-  return 0;
+  return 0;  // No collisions
 }
 
 void update_board(void) {
@@ -146,7 +149,9 @@ void update_board(void) {
   for (int i = 0; i < shape.cols; i++) {
     for (int j = 0; j < shape.rows; j++) {
       if (shape.shape[j][i] == 1) {
-        board_state[(int)position[1] + j][(int)position[0] + i] = 1;
+        board_state[(int)position[1] + j][(int)position[0] + i].filled = 1;
+        board_state[(int)position[1] + j][(int)position[0] + i].color =
+            shape.color;
       }
     }
   }
@@ -191,9 +196,10 @@ void render() {
       SDL_Rect shape_rect = {(int)(i * SQUARE_WIDTH), (int)(j * SQUARE_WIDTH),
                              SQUARE_WIDTH, SQUARE_WIDTH};
 
-      if (board_state[j][i] == 1) {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-
+      if (board_state[j][i].filled == 1) {
+        SDL_SetRenderDrawColor(
+            renderer, board_state[j][i].color.r, board_state[j][i].color.g,
+            board_state[j][i].color.b, board_state[j][i].color.a);
       } else {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
       }
