@@ -10,6 +10,7 @@ int last_frame_time = 0;
 
 const int SQUARE_WIDTH = 40;
 float position[] = {3, 0};
+int current_index = 0;
 int bag[] = {0, 1, 2, 3, 4, 5, 6};
 
 typedef struct tetromino {
@@ -18,23 +19,6 @@ typedef struct tetromino {
   int shape[4][4];
   SDL_Color color;
 } tetromino;
-
-// int* make_pointer_to_tetromino_shape(int height, int width) {
-//   int* shape = (int*)malloc(height * sizeof(int[width]));
-//   return shape;
-// }
-
-// void free_tetromino_shape(int* shape) { free(shape); }
-
-int I[2][4] = {{0, 0, 0, 0}, {1, 1, 1, 1}};
-int J[2][3] = {{1, 0, 0}, {1, 1, 1}};
-int L[2][3] = {{0, 0, 1}, {1, 1, 1}};
-int O[2][2] = {{1, 1}, {1, 1}};
-int S[2][3] = {{0, 1, 1}, {1, 1, 0}};
-int T[2][3] = {{0, 1, 0}, {1, 1, 1}};
-int Z[2][3] = {{1, 1, 0}, {0, 1, 1}};
-
-int* tetromino_shape_templates[] = {I, J, L, O, S, T, Z};
 
 tetromino tetrominos[7] = {
     // I
@@ -72,15 +56,6 @@ tetromino tetrominos[7] = {
      .cols = 3,
      .shape = {{1, 1, 0}, {0, 1, 1}},
      .color = {.r = 255, .g = 0, .b = 0, .a = 255}}};
-
-void allocate_tetromino_shape(tetromino tetromino, int tetromino_index) {
-  int** shape = tetromino.shape;
-  int rows = tetromino.rows;
-  int cols = tetromino.cols;
-  *shape = malloc(sizeof(int) * rows * cols);
-  memcpy(*shape, tetromino_shape_templates[tetromino_index],
-         sizeof(int) * rows * cols);
-}
 
 int board_state[20][10] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
@@ -145,11 +120,40 @@ void process_input() {
   }
 }
 
-void setup() {
-  // for (int i = 0; i < 7; i++) {
-  //   allocate_tetromino_shape(tetrominos[i], i);
-  // }
-  shuffle_bag(bag, 7);
+void setup() { shuffle_bag(bag, 7); }
+
+int check_collisions(void) {
+  const tetromino shape = tetrominos[current_index];
+
+  for (int i = 0; i < shape.cols; i++) {
+    for (int j = 0; j < shape.rows; j++) {
+      if (shape.shape[j][i] == 1) {
+        printf("Board State: %d\n",
+               board_state[(int)position[1] + j + 1][(int)position[0] + i]);
+        if (board_state[(int)position[1] + j + 1][(int)position[0] + i] != 0) {
+          printf("Square below is filled.");
+          return 1;
+        }
+        if ((int)position[1] + shape.rows == 20) {
+          printf("Hit the bottom.");
+          return 1;
+        }
+      }
+    }
+  }
+  return 0;
+}
+
+void update_board(void) {
+  const tetromino shape = tetrominos[current_index];
+
+  for (int i = 0; i < shape.cols; i++) {
+    for (int j = 0; j < shape.rows; j++) {
+      if (shape.shape[j][i] == 1) {
+        board_state[(int)position[1] + j][(int)position[0] + i] = 1;
+      }
+    }
+  }
 }
 
 void update() {
@@ -159,16 +163,19 @@ void update() {
   if (delta_time >= 1) {
     last_frame_time = SDL_GetTicks();
 
-    const int blocks_per_sec = 5;
-    if (position[1] > 19) {
+    const int blocks_per_sec = 1;
+
+    int collision = check_collisions();
+    printf("Collision: %d", collision);
+
+    if (collision) {
+      update_board();
       position[1] = 0;
     } else {
       position[1] += blocks_per_sec * delta_time;
     }
   }
 }
-
-int current_index = 0;
 
 void render() {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
