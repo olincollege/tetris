@@ -153,6 +153,37 @@ int check_collisions(void) {
   return 0;  // No collisions
 }
 
+int check_completed_lines(void) {
+  int lines_cleared = 0;
+
+  for (int i = 0; i < 20; i++) {
+    int line_complete = 1;
+    for (int j = 0; j < 10; j++) {
+      if (board_state[i][j].filled == 0) {
+        line_complete = 0;
+        break;
+      }
+    }
+
+    if (line_complete) {
+      for (int j = 0; j < 10; j++) {
+        board_state[i][j].filled = 0;
+      }
+
+      for (int i = i; i > 0; i--) {
+        for (int j = 0; j < 10; j++) {
+          board_state[i][j].filled = board_state[i - 1][j].filled;
+          board_state[i][j].color = board_state[i - 1][j].color;
+        }
+      }
+
+      lines_cleared++;
+    }
+  }
+
+  return lines_cleared;
+}
+
 void update_board(void) {
   const tetromino shape = tetrominos[bag[current_index]];
 
@@ -164,6 +195,11 @@ void update_board(void) {
             shape.color;
       }
     }
+  }
+
+  int lines_cleared = check_completed_lines();
+  if (lines_cleared > 0) {
+    // add score stuff here
   }
 }
 
