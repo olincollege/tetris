@@ -110,6 +110,16 @@ void process_input() {
     case SDL_KEYDOWN:
       if (event.key.keysym.sym == SDLK_ESCAPE) {
         game_running = 0;
+      } else if (event.key.keysym.sym == SDLK_LEFT) {
+        position[0] -= 1;
+        if (position[0] < 0) {
+          position[0] = 0;
+        }
+      } else if (event.key.keysym.sym == SDLK_RIGHT) {
+        position[0] += 1;
+        if (position[0] + tetrominos[bag[current_index]].cols > 10) {
+          position[0] = 10 - tetrominos[bag[current_index]].cols;
+        }
       }
       break;
   }
@@ -173,8 +183,7 @@ void update() {
       position[1] = 0;
       current_index++;
       if (current_index >= 7) {
-        // If all tetrominos have been rendered, shuffle the bag
-        shuffle_bag(bag, 7);  // Assuming there are 7 tetrominos
+        shuffle_bag(bag, 7);
         current_index = 0;
       }
       position[1] = 0;
@@ -188,7 +197,6 @@ void render() {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
-  // Render the tetromino at the current index in the bag
   const tetromino shape = tetrominos[bag[current_index]];
 
   for (int i = 0; i < 10; i++) {
@@ -196,14 +204,16 @@ void render() {
       SDL_Rect shape_rect = {(int)(i * SQUARE_WIDTH), (int)(j * SQUARE_WIDTH),
                              SQUARE_WIDTH, SQUARE_WIDTH};
 
+      // adding grid lines
+      SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
+      SDL_RenderDrawRect(renderer, &shape_rect);
+
       if (board_state[j][i].filled == 1) {
         SDL_SetRenderDrawColor(
             renderer, board_state[j][i].color.r, board_state[j][i].color.g,
             board_state[j][i].color.b, board_state[j][i].color.a);
-      } else {
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderFillRect(renderer, &shape_rect);
       }
-      SDL_RenderFillRect(renderer, &shape_rect);
     }
   }
 
