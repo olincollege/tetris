@@ -170,10 +170,10 @@ int check_completed_lines(void) {
         board_state[i][j].filled = 0;
       }
 
-      for (int i = i; i > 0; i--) {
+      for (int k = i; k > 0; k--) {
         for (int j = 0; j < 10; j++) {
-          board_state[i][j].filled = board_state[i - 1][j].filled;
-          board_state[i][j].color = board_state[i - 1][j].color;
+          board_state[k][j].filled = board_state[k - 1][j].filled;
+          board_state[k][j].color = board_state[k - 1][j].color;
         }
       }
 
@@ -303,7 +303,7 @@ int main(void) {
     } else {
       // Game over logic here (e.g., display game over message)
       printf("Game Over!\n");
-      game_running = 0;  // End the game loop
+      game_running = 0;
     }
   }
 
