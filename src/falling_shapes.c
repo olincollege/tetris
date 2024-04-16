@@ -184,6 +184,20 @@ int check_completed_lines(void) {
   return lines_cleared;
 }
 
+int game_over(void) {
+  int game_over = 0;
+
+  // Check each cell in the specified line
+  for (int i = 0; i < 10; i++) {
+    if (board_state[0][i].filled == 1) {
+      game_over = 1;
+      break;  // If any cell is filled, break the loop
+    }
+  }
+
+  return game_over;
+}
+
 void update_board(void) {
   const tetromino shape = tetrominos[bag[current_index]];
 
@@ -283,8 +297,14 @@ int main(void) {
 
   while (game_running) {
     process_input();
-    render();
-    update();
+    if (!game_over()) {  // Check for game over condition
+      render();
+      update();
+    } else {
+      // Game over logic here (e.g., display game over message)
+      printf("Game Over!\n");
+      game_running = 0;  // End the game loop
+    }
   }
 
   destroy_window();
