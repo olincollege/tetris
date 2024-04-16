@@ -120,6 +120,21 @@ void process_input() {
         if (position[0] + tetrominos[bag[current_index]].cols > 10) {
           position[0] = 10 - tetrominos[bag[current_index]].cols;
         }
+      } else if (event.key.keysym.sym == SDLK_DOWN) {
+        // Soft drop
+        while (!check_collisions()) {
+          position[1] += 1;
+          break;
+        }
+      } else if (event.key.keysym.sym == SDLK_SPACE) {
+        // Hard drop
+        while (!check_collisions()) {
+          position[1] += 1;
+          if (position[1] + tetrominos[bag[current_index]].rows > 20) {
+            position[1] = 20 - tetrominos[bag[current_index]].rows;
+            break;
+          }
+        }
       }
       break;
   }
