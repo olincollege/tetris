@@ -135,6 +135,36 @@ void process_input() {
             break;
           }
         }
+      } else if (event.key.keysym.sym == SDLK_UP) {
+        tetromino* shape = &tetrominos[bag[current_index]];
+        int temp_shape[4][4];
+        for (int i = 0; i < shape->rows; i++) {
+          for (int j = 0; j < shape->cols; j++) {
+            temp_shape[j][shape->rows - i - 1] = shape->shape[i][j];
+          }
+        }
+        int collision = 0;
+        for (int i = 0; i < shape->cols; i++) {
+          for (int j = 0; j < shape->rows; j++) {
+            if (temp_shape[j][i] == 1) {
+              if ((int)position[0] + i < 0 || (int)position[0] + i >= 10 ||
+                  (int)position[1] + j < 0 || (int)position[1] + j >= 20 ||
+                  board_state[(int)position[1] + j][(int)position[0] + i]
+                          .filled != 0) {
+                collision = 1;
+                break;
+              }
+            }
+          }
+          if (collision) break;
+        }
+        if (!collision) {
+          for (int i = 0; i < shape->rows; i++) {
+            for (int j = 0; j < shape->cols; j++) {
+              shape->shape[i][j] = temp_shape[i][j];
+            }
+          }
+        }
       }
       break;
   }
@@ -251,6 +281,7 @@ void update() {
         shuffle_bag(bag, 7);
         current_index = 0;
       }
+      position[0] = 3;
       position[1] = 0;
     } else {
       position[1] += blocks_per_sec * delta_time;
