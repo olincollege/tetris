@@ -161,6 +161,11 @@ void process_input() {
         if (!collision) {
           for (int i = 0; i < shape->rows; i++) {
             for (int j = 0; j < shape->cols; j++) {
+              int row = shape->rows;
+              int col = shape->cols;
+              shape->rows = col;
+              shape->cols = row;
+              shape->shape[i][j] = temp_shape[i][j];
               shape->shape[i][j] = temp_shape[i][j];
             }
           }
