@@ -245,6 +245,7 @@ void update() {
 
     if (collision) {
       update_board();
+      position[0] = 3;
       position[1] = 0;
       current_index++;
       if (current_index >= 7) {
