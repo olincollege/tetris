@@ -19,18 +19,21 @@ typedef struct tetromino {
 
 void shuffle_bag(int* array, size_t n);
 
-int initialize_window(void);
+int initialize_window(SDL_Renderer* renderer);
 
-void setup(void);
+void setup(int* bag, BoardCell (*board_state)[10]);
 
-int check_collisions(void);
+int check_collisions(tetromino* tetrominos, int* bag, int* current_index,
+                     float* position, BoardCell (*board_state)[10]);
 
-int check_completed_lines(void);
+int check_completed_lines(BoardCell (*board_state)[10]);
 
-int game_over(void);
+int game_over(BoardCell (*board_state)[10]);
 
-void update_board(void);
+void update_board(tetromino* tetrominos, int* bag, int* current_index,
+                  float* position, BoardCell (*board_state)[10]);
 
-void update(void);
+void update(float* position, int* current_index, int* bag,
+            tetromino* tetrominos, BoardCell (*board_state)[10]);
 
-void destroy_window(void);
+void destroy_window(SDL_Renderer* renderer);

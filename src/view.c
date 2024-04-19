@@ -6,11 +6,13 @@
 
 void render(SDL_Renderer* renderer, tetromino* tetrominos, int* bag,
             int* current_index, float* position, BoardCell (*board_state)[10]) {
-  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
   const tetromino shape = tetrominos[bag[*current_index]];
-
+  // printf("Bag Index: %d\n", bag[*current_index]);
+  // printf("RGB Values: %d, %d, %d\n", shape.color.r, shape.color.g,
+  //        shape.color.b);
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 20; j++) {
       SDL_Rect shape_rect = {(int)(i * SQUARE_WIDTH), (int)(j * SQUARE_WIDTH),

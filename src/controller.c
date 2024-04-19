@@ -27,13 +27,15 @@ void process_input(int* game_running, float* position, int* current_index,
         }
       } else if (event.key.keysym.sym == SDLK_DOWN) {
         // Soft drop
-        while (!check_collisions()) {
+        while (!check_collisions(tetrominos, bag, current_index, position,
+                                 board_state)) {
           position[1] += 1;
           break;
         }
       } else if (event.key.keysym.sym == SDLK_SPACE) {
         // Hard drop
-        while (!check_collisions()) {
+        while (!check_collisions(tetrominos, bag, current_index, position,
+                                 board_state)) {
           position[1] += 1;
           if (position[1] + tetrominos[bag[*current_index]].rows > 20) {
             position[1] = 20 - tetrominos[bag[*current_index]].rows;

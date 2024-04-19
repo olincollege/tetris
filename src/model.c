@@ -3,53 +3,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "controller.h"
-#include "view.h"
-
 SDL_Window* window = NULL;
-SDL_Renderer* renderer = NULL;
-int game_running = 0;
-float position[] = {3, 0};
-int current_index = 0;
-int bag[] = {0, 1, 2, 3, 4, 5, 6};
-
-tetromino tetrominos[7] = {  // I
-    {.rows = 2,
-     .cols = 4,
-     .shape = {{0, 0, 0, 0}, {1, 1, 1, 1}},
-     .color = {.r = 0, .g = 255, .b = 255, .a = 255}},
-    // J
-    {.rows = 2,
-     .cols = 3,
-     .shape = {{1, 0, 0}, {1, 1, 1}},
-     .color = {.r = 0, .g = 0, .b = 255, .a = 255}},
-    // L
-    {.rows = 2,
-     .cols = 3,
-     .shape = {{0, 0, 1}, {1, 1, 1}},
-     .color = {.r = 255, .g = 165, .b = 0, .a = 255}},
-    // O
-    {.rows = 2,
-     .cols = 2,
-     .shape = {{1, 1}, {1, 1}},
-     .color = {.r = 255, .g = 255, .b = 0, .a = 255}},
-    // S
-    {.rows = 2,
-     .cols = 3,
-     .shape = {{0, 1, 1}, {1, 1, 0}},
-     .color = {.r = 0, .g = 255, .b = 0, .a = 255}},
-    // T
-    {.rows = 2,
-     .cols = 3,
-     .shape = {{0, 1, 0}, {1, 1, 1}},
-     .color = {.r = 128, .g = 0, .b = 255, .a = 255}},
-    // Z
-    {.rows = 2,
-     .cols = 3,
-     .shape = {{1, 1, 0}, {0, 1, 1}},
-     .color = {.r = 255, .g = 0, .b = 0, .a = 255}}};
-
-BoardCell board_state[20][10];
 
 int last_frame_time = 0;
 
@@ -65,7 +19,7 @@ void shuffle_bag(int* array, size_t n) {
   }
 }
 
-int initialize_window(void) {
+int initialize_window(SDL_Renderer* renderer) {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     fprintf(stderr, "Error initializing SDL.\n");
     return 0;
@@ -88,7 +42,7 @@ int initialize_window(void) {
   return 1;
 }
 
-void setup(void) {
+void setup(int* bag, BoardCell (*board_state)[10]) {
   shuffle_bag(bag, 7);
   for (int i = 0; i < 20; i++) {
     for (int j = 0; j < 10; j++) {
@@ -97,8 +51,9 @@ void setup(void) {
   }
 }
 
-int check_collisions(void) {
-  const tetromino shape = tetrominos[bag[current_index]];
+int check_collisions(tetromino* tetrominos, int* bag, int* current_index,
+                     float* position, BoardCell (*board_state)[10]) {
+  const tetromino shape = tetrominos[bag[*current_index]];
 
   for (int i = 0; i < shape.cols; i++) {
     for (int j = 0; j < shape.rows; j++) {
@@ -116,7 +71,7 @@ int check_collisions(void) {
   return 0;  // No collisions
 }
 
-int check_completed_lines(void) {
+int check_completed_lines(BoardCell (*board_state)[10]) {
   int lines_cleared = 0;
 
   for (int i = 0; i < 20; i++) {
@@ -147,7 +102,7 @@ int check_completed_lines(void) {
   return lines_cleared;
 }
 
-int game_over(void) {
+int game_over(BoardCell (*board_state)[10]) {
   int game_over = 0;
 
   // Check each cell in the specified line
@@ -161,8 +116,9 @@ int game_over(void) {
   return game_over;
 }
 
-void update_board(void) {
-  const tetromino shape = tetrominos[bag[current_index]];
+void update_board(tetromino* tetrominos, int* bag, int* current_index,
+                  float* position, BoardCell (*board_state)[10]) {
+  const tetromino shape = tetrominos[bag[*current_index]];
 
   for (int i = 0; i < shape.cols; i++) {
     for (int j = 0; j < shape.rows; j++) {
@@ -174,13 +130,14 @@ void update_board(void) {
     }
   }
 
-  int lines_cleared = check_completed_lines();
+  int lines_cleared = check_completed_lines(board_state);
   if (lines_cleared > 0) {
     // add score stuff here
   }
 }
 
-void update(void) {
+void update(float* position, int* current_index, int* bag,
+            tetromino* tetrominos, BoardCell (*board_state)[10]) {
   // delta time, converted to seconds
   float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
 
@@ -189,16 +146,17 @@ void update(void) {
 
     const int blocks_per_sec = 1;
 
-    int collision = check_collisions();
+    int collision =
+        check_collisions(tetrominos, bag, current_index, position, board_state);
 
     if (collision) {
-      update_board();
+      update_board(tetrominos, bag, current_index, position, board_state);
       position[0] = 3;
       position[1] = 0;
-      current_index++;
-      if (current_index >= 7) {
+      (*current_index)++;
+      if (*current_index >= 7) {
         shuffle_bag(bag, 7);
-        current_index = 0;
+        *current_index = 0;
       }
       position[1] = 0;
     } else {
@@ -207,31 +165,8 @@ void update(void) {
   }
 }
 
-void destroy_window(void) {
+void destroy_window(SDL_Renderer* renderer) {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
   SDL_Quit();
-}
-
-int main(void) {
-  game_running = initialize_window();
-
-  setup();
-
-  while (game_running) {
-    process_input(&game_running, position, &current_index, tetrominos, bag,
-                  board_state);
-    if (!game_over()) {  // Check for game over condition
-      render(renderer, tetrominos, bag, &current_index, position, board_state);
-      update();
-    } else {
-      // Game over logic here (e.g., display game over message)
-      printf("Game Over!\n");
-      game_running = 0;
-    }
-  }
-
-  destroy_window();
-
-  return 0;
 }
