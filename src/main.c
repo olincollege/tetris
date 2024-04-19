@@ -51,15 +51,21 @@ int main(void) {
 
   BoardCell board_state[20][10];
 
+  tetromino current_piece = {
+      .rows = 4,
+      .cols = 4,
+      .shape = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
+      .color = {.r = 255, .g = 255, .b = 255, .a = 255}};
+
   game_running = initialize_window(&renderer);
-  setup(bag, board_state);
+  setup(bag, board_state, &current_piece, &current_index, tetrominos);
 
   while (game_running) {
-    process_input(&game_running, position, &current_index, tetrominos, bag,
-                  board_state);
+    process_input(&game_running, position, board_state, &current_piece);
     if (!game_over(board_state)) {  // Check for game over condition
-      render(renderer, tetrominos, bag, &current_index, position, board_state);
-      update(position, &current_index, bag, tetrominos, board_state);
+      render(renderer, position, board_state, &current_piece);
+      update(position, &current_index, bag, board_state, &current_piece,
+             tetrominos);
     } else {
       // Game over logic here (e.g., display game over message)
       printf("Game Over!\n");

@@ -4,12 +4,10 @@
 
 #include "model.h"
 
-void render(SDL_Renderer* renderer, tetromino* tetrominos, int* bag,
-            int* current_index, float* position, BoardCell (*board_state)[10]) {
+void render(SDL_Renderer* renderer, float* position,
+            BoardCell (*board_state)[10], tetromino* current_piece) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
-
-  const tetromino shape = tetrominos[bag[*current_index]];
 
   for (int i = 0; i < 10; i++) {
     for (int j = 0; j < 20; j++) {
@@ -29,15 +27,16 @@ void render(SDL_Renderer* renderer, tetromino* tetrominos, int* bag,
     }
   }
 
-  for (int i = 0; i < shape.cols; i++) {
-    for (int j = 0; j < shape.rows; j++) {
+  for (int i = 0; i < current_piece->cols; i++) {
+    for (int j = 0; j < current_piece->rows; j++) {
       SDL_Rect shape_rect = {
           40 + (int)(position[0] * SQUARE_WIDTH + i * SQUARE_WIDTH),
           40 + (int)(position[1] * SQUARE_WIDTH + j * SQUARE_WIDTH),
           SQUARE_WIDTH, SQUARE_WIDTH};
-      if (shape.shape[j][i] == 1) {
-        SDL_SetRenderDrawColor(renderer, shape.color.r, shape.color.g,
-                               shape.color.b, shape.color.a);
+      if (current_piece->shape[j][i] == 1) {
+        SDL_SetRenderDrawColor(renderer, current_piece->color.r,
+                               current_piece->color.g, current_piece->color.b,
+                               current_piece->color.a);
         SDL_RenderFillRect(renderer, &shape_rect);
       }
       SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);

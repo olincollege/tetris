@@ -4,5 +4,5 @@
 #include "model.h"
 
 /***/
-void render(SDL_Renderer* renderer, tetromino* tetrominos, int* bag,
-            int* current_index, float* position, BoardCell (*board_state)[10]);
+void render(SDL_Renderer* renderer, float* position,
+            BoardCell (*board_state)[10], tetromino* current_piece);
