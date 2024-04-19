@@ -19,7 +19,7 @@ void shuffle_bag(int* array, size_t n) {
   }
 }
 
-int initialize_window(SDL_Renderer* renderer) {
+int initialize_window(SDL_Renderer** renderer) {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
     fprintf(stderr, "Error initializing SDL.\n");
     return 0;
@@ -33,8 +33,8 @@ int initialize_window(SDL_Renderer* renderer) {
     return 0;
   }
 
-  renderer = SDL_CreateRenderer(window, -1, 0);
-  if (!renderer) {
+  *renderer = SDL_CreateRenderer(window, -1, 0);
+  if (!*renderer) {
     fprintf(stderr, "Error creating SDL Renderer.\n");
     return 0;
   }

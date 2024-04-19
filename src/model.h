@@ -19,7 +19,7 @@ typedef struct tetromino {
 
 void shuffle_bag(int* array, size_t n);
 
-int initialize_window(SDL_Renderer* renderer);
+int initialize_window(SDL_Renderer** renderer);
 
 void setup(int* bag, BoardCell (*board_state)[10]);
 
