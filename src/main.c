@@ -58,9 +58,6 @@ int main(void) {
     process_input(&game_running, position, &current_index, tetrominos, bag,
                   board_state);
     if (!game_over(board_state)) {  // Check for game over condition
-      //   printf("Position: %.1f, %.1f\n", position[0], position[1]);
-      //   printf("Current Index: %d\n", current_index);
-      //   printf("Bag Value: %d\n", bag[current_index]);
       render(renderer, tetrominos, bag, &current_index, position, board_state);
       update(position, &current_index, bag, tetrominos, board_state);
     } else {
