@@ -73,7 +73,7 @@ int initialize_window(void) {
 
   window =
       SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                       10 * SQUARE_WIDTH, 20 * SQUARE_WIDTH, 0);
+                       17 * SQUARE_WIDTH, 22 * SQUARE_WIDTH, 0);
   if (!window) {
     fprintf(stderr, "Error creating SDL Window.\n");
     return 0;
