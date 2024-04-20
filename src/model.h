@@ -20,6 +20,7 @@ typedef struct tetromino {
   int cols;
   int shape[4][4];
   SDL_Color color;
+  char letter;
 } tetromino;
 
 void shuffle_bag(int* array, size_t n);

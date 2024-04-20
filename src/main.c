@@ -17,37 +17,44 @@ int main(void) {
                              {.rows = 1,
                               .cols = 4,
                               .shape = {{1, 1, 1, 1}},
-                              .color = {.r = 0, .g = 255, .b = 255, .a = 255}},
+                              .color = {.r = 0, .g = 255, .b = 255, .a = 255},
+                              .letter = 'I'},
                              // J
                              {.rows = 2,
                               .cols = 3,
                               .shape = {{1, 0, 0}, {1, 1, 1}},
-                              .color = {.r = 0, .g = 0, .b = 255, .a = 255}},
+                              .color = {.r = 0, .g = 0, .b = 255, .a = 255},
+                              .letter = 'J'},
                              // L
                              {.rows = 2,
                               .cols = 3,
                               .shape = {{0, 0, 1}, {1, 1, 1}},
-                              .color = {.r = 255, .g = 165, .b = 0, .a = 255}},
+                              .color = {.r = 255, .g = 165, .b = 0, .a = 255},
+                              .letter = 'L'},
                              // O
                              {.rows = 2,
                               .cols = 2,
                               .shape = {{1, 1}, {1, 1}},
-                              .color = {.r = 255, .g = 255, .b = 0, .a = 255}},
+                              .color = {.r = 255, .g = 255, .b = 0, .a = 255},
+                              .letter = 'O'},
                              // S
                              {.rows = 2,
                               .cols = 3,
                               .shape = {{0, 1, 1}, {1, 1, 0}},
-                              .color = {.r = 0, .g = 255, .b = 0, .a = 255}},
+                              .color = {.r = 0, .g = 255, .b = 0, .a = 255},
+                              .letter = 'S'},
                              // T
                              {.rows = 2,
                               .cols = 3,
                               .shape = {{0, 1, 0}, {1, 1, 1}},
-                              .color = {.r = 128, .g = 0, .b = 255, .a = 255}},
+                              .color = {.r = 128, .g = 0, .b = 255, .a = 255},
+                              .letter = 'T'},
                              // Z
                              {.rows = 2,
                               .cols = 3,
                               .shape = {{1, 1, 0}, {0, 1, 1}},
-                              .color = {.r = 255, .g = 0, .b = 0, .a = 255}}};
+                              .color = {.r = 255, .g = 0, .b = 0, .a = 255},
+                              .letter = 'Z'}};
 
   BoardCell board_state[20][10];
 
@@ -55,7 +62,8 @@ int main(void) {
       .rows = 4,
       .cols = 4,
       .shape = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
-      .color = {.r = 255, .g = 255, .b = 255, .a = 255}};
+      .color = {.r = 255, .g = 255, .b = 255, .a = 255},
+      .letter = 'A'};
   int rotation_state = 0;
 
   int dropped = 0;

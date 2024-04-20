@@ -71,6 +71,7 @@ void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
   current_piece->rows = template.rows;
   current_piece->cols = template.cols;
   current_piece->color = template.color;
+  current_piece->letter = template.letter;
   copy_shape_matrix(current_piece->shape, template.shape, template.rows,
                     template.cols);
 }
@@ -78,45 +79,71 @@ void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
 void rotate_shape(float* position, BoardCell (*board_state)[10],
                   tetromino* current_piece, int clockwise,
                   int* rotation_state) {
-  int temp_shape[4][4];
-  float temp_position[] = {position[0], position[1]};
+  if (current_piece->letter != 'O') {
+    int temp_shape[4][4];
+    float temp_position[] = {position[0], position[1]};
 
-  for (int i = 0; i < current_piece->rows; i++) {
-    for (int j = 0; j < current_piece->cols; j++) {
-      // left (counterclockwise)
-      if (clockwise == 0) {
-        temp_shape[current_piece->cols - j - 1][i] = current_piece->shape[i][j];
-      } else {
-        temp_shape[j][current_piece->rows - i - 1] = current_piece->shape[i][j];
+    for (int i = 0; i < current_piece->rows; i++) {
+      for (int j = 0; j < current_piece->cols; j++) {
+        // left (counterclockwise)
+        if (clockwise == 0) {
+          temp_shape[current_piece->cols - j - 1][i] =
+              current_piece->shape[i][j];
+        } else {
+          temp_shape[j][current_piece->rows - i - 1] =
+              current_piece->shape[i][j];
+        }
       }
     }
-  }
 
-  if (current_piece->rows < current_piece->cols) {
-    temp_position[1] -= 1;
-  } else {
-    temp_position[1] += 1;
-  }
-
-  tetromino temp_tetromino = {.rows = current_piece->cols,
-                              .cols = current_piece->rows,
-                              .color = current_piece->color};
-  copy_shape_matrix(temp_tetromino.shape, temp_shape, current_piece->cols,
-                    current_piece->rows);
-
-  if (available_position(temp_position, board_state, &temp_tetromino)) {
-    current_piece->cols = temp_tetromino.cols;
-    current_piece->rows = temp_tetromino.rows;
-    copy_shape_matrix(current_piece->shape, temp_tetromino.shape,
-                      temp_tetromino.rows, temp_tetromino.cols);
-
-    position[0] = temp_position[0];
-    position[1] = temp_position[1];
-
-    if (!clockwise) {
-      *rotation_state = *rotation_state - 1 == -1 ? 3 : *rotation_state - 1;
+    if (current_piece->rows < current_piece->cols) {
+      temp_position[1] -= 1;
     } else {
-      *rotation_state = *rotation_state + 1 == 4 ? 0 : *rotation_state + 1;
+      temp_position[1] += 1;
+    }
+
+    if (current_piece->letter == 'I') {
+      if (*rotation_state % 2 == 0) {
+        temp_position[0] += 2;
+      } else {
+        temp_position[0] -= 2;
+      }
+    } else if (current_piece->letter == 'Z') {
+      if (*rotation_state % 2 == 0) {
+        temp_position[0] += 1;
+      } else {
+        temp_position[0] -= 1;
+      }
+    } else if (current_piece->letter == 'L' || current_piece->letter == 'J' ||
+               current_piece->letter == 'T') {
+      if (*rotation_state == 1) {
+        temp_position[0] -= 1;
+      } else if ((*rotation_state == 0 && clockwise) ||
+                 (*rotation_state == 2 && !clockwise)) {
+        temp_position[0] += 1;
+      }
+    }
+
+    tetromino temp_tetromino = {.rows = current_piece->cols,
+                                .cols = current_piece->rows,
+                                .color = current_piece->color};
+    copy_shape_matrix(temp_tetromino.shape, temp_shape, current_piece->cols,
+                      current_piece->rows);
+
+    if (available_position(temp_position, board_state, &temp_tetromino)) {
+      current_piece->cols = temp_tetromino.cols;
+      current_piece->rows = temp_tetromino.rows;
+      copy_shape_matrix(current_piece->shape, temp_tetromino.shape,
+                        temp_tetromino.rows, temp_tetromino.cols);
+
+      position[0] = temp_position[0];
+      position[1] = temp_position[1];
+
+      if (!clockwise) {
+        *rotation_state = *rotation_state - 1 == -1 ? 3 : *rotation_state - 1;
+      } else {
+        *rotation_state = *rotation_state + 1 == 4 ? 0 : *rotation_state + 1;
+      }
     }
   }
 }
