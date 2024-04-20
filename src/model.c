@@ -72,12 +72,13 @@ void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
 }
 
 int check_collisions(float* position, BoardCell (*board_state)[10],
-                     tetromino* current_piece) {
+                     tetromino* current_piece, direction dir) {
   for (int i = 0; i < current_piece->cols; i++) {
     for (int j = 0; j < current_piece->rows; j++) {
       if (current_piece->shape[j][i] == 1) {
-        if (board_state[(int)position[1] + j + 1][(int)position[0] + i]
-                .filled != 0) {
+        if (board_state[(int)position[1] + j + dir.vertical]
+                       [(int)position[0] + i + dir.horizontal]
+                           .filled != 0) {
           return 1;  // Collision with another tetromino
         }
         if ((int)position[1] + j + 1 >= 20) {
@@ -163,7 +164,9 @@ void update(float* position, int* current_index, int* bag,
 
     const int blocks_per_sec = 1;
 
-    int collision = check_collisions(position, board_state, current_piece);
+    direction dir_down = {.horizontal = 0, .vertical = 1};
+    int collision =
+        check_collisions(position, board_state, current_piece, dir_down);
 
     if (collision) {
       update_board(position, board_state, current_piece);

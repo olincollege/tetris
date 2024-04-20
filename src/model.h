@@ -6,6 +6,11 @@ enum {
 };
 
 typedef struct {
+  int horizontal;
+  int vertical;
+} direction;
+
+typedef struct {
   int filled;
   SDL_Color color;
 } BoardCell;
@@ -30,7 +35,7 @@ void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
                        tetromino* tetrominos);
 
 int check_collisions(float* position, BoardCell (*board_state)[10],
-                     tetromino* current_piece);
+                     tetromino* current_piece, direction dir);
 
 int check_completed_lines(BoardCell (*board_state)[10]);
 
