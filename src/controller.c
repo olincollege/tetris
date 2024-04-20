@@ -4,7 +4,7 @@
 
 void process_input(int* game_running, float* position,
                    BoardCell (*board_state)[10], tetromino* current_piece,
-                   int* dropped) {
+                   int* dropped, int* rotation_state) {
   SDL_Event event;
   SDL_PollEvent(&event);
 
@@ -48,9 +48,9 @@ void process_input(int* game_running, float* position,
         }
         *dropped = 1;
       } else if (event.key.keysym.sym == SDLK_z) {
-        rotate_shape(position, board_state, current_piece, 0);
+        rotate_shape(position, board_state, current_piece, 0, rotation_state);
       } else if (event.key.keysym.sym == SDLK_UP) {
-        rotate_shape(position, board_state, current_piece, 1);
+        rotate_shape(position, board_state, current_piece, 1, rotation_state);
       }
       break;
   }

@@ -56,6 +56,7 @@ int main(void) {
       .cols = 4,
       .shape = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
       .color = {.r = 255, .g = 255, .b = 255, .a = 255}};
+  int rotation_state = 0;
 
   int dropped = 0;
 
@@ -64,11 +65,11 @@ int main(void) {
 
   while (game_running) {
     process_input(&game_running, position, board_state, &current_piece,
-                  &dropped);
+                  &dropped, &rotation_state);
     if (!game_over(board_state)) {  // Check for game over condition
       render(renderer, position, board_state, &current_piece);
       update(position, &current_index, bag, board_state, &current_piece,
-             tetrominos, &dropped);
+             tetrominos, &dropped, &rotation_state);
     } else {
       // Game over logic here (e.g., display game over message)
       printf("Game Over!\n");

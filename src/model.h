@@ -35,7 +35,7 @@ void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
                        tetromino* tetrominos, float* position);
 
 void rotate_shape(float* position, BoardCell (*board_state)[10],
-                  tetromino* current_piece, int clockwise);
+                  tetromino* current_piece, int clockwise, int* rotation_state);
 
 int available_position(float* temp_position, BoardCell (*board_state)[10],
                        tetromino* temp_tetromino);
@@ -52,6 +52,6 @@ void update_board(float* position, BoardCell (*board_state)[10],
 
 void update(float* position, int* current_index, int* bag,
             BoardCell (*board_state)[10], tetromino* current_piece,
-            tetromino* tetrominos, int* dropped);
+            tetromino* tetrominos, int* dropped, int* rotation_state);
 
 void destroy_window(SDL_Renderer* renderer);

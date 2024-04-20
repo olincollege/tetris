@@ -76,7 +76,8 @@ void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
 }
 
 void rotate_shape(float* position, BoardCell (*board_state)[10],
-                  tetromino* current_piece, int clockwise) {
+                  tetromino* current_piece, int clockwise,
+                  int* rotation_state) {
   int temp_shape[4][4];
   float temp_position[] = {position[0], position[1]};
 
@@ -112,8 +113,10 @@ void rotate_shape(float* position, BoardCell (*board_state)[10],
     position[0] = temp_position[0];
     position[1] = temp_position[1];
 
-    if ((int)position[0] + current_piece->cols > 10) {
-      position[0] = 10 - current_piece->cols;
+    if (!clockwise) {
+      *rotation_state = *rotation_state - 1 == -1 ? 3 : *rotation_state - 1;
+    } else {
+      *rotation_state = *rotation_state + 1 == 4 ? 0 : *rotation_state + 1;
     }
   }
 }
@@ -238,7 +241,7 @@ void update_board(float* position, BoardCell (*board_state)[10],
 
 void update(float* position, int* current_index, int* bag,
             BoardCell (*board_state)[10], tetromino* current_piece,
-            tetromino* tetrominos, int* dropped) {
+            tetromino* tetrominos, int* dropped, int* rotation_state) {
   // delta time, converted to seconds
   float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
 
@@ -262,6 +265,7 @@ void update(float* position, int* current_index, int* bag,
       }
       set_current_piece(current_piece, current_index, bag, tetrominos,
                         position);
+      *rotation_state = 0;
     } else {
       position[1] += blocks_per_sec * delta_time;
     }
