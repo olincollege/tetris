@@ -21,13 +21,11 @@ void process_input(int* game_running, float* position,
       if (event.key.keysym.sym == SDLK_ESCAPE) {
         *game_running = 0;
       } else if (event.key.keysym.sym == SDLK_LEFT) {
-        if (position[0] > 0 &&
-            !check_collisions(position, board_state, current_piece, dir_left)) {
+        if (!check_collisions(position, board_state, current_piece, dir_left)) {
           position[0] -= 1;
         }
       } else if (event.key.keysym.sym == SDLK_RIGHT) {
-        if (position[0] + current_piece->cols < 10 &&
-            !check_collisions(position, board_state, current_piece,
+        if (!check_collisions(position, board_state, current_piece,
                               dir_right)) {
           position[0] += 1;
         }

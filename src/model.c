@@ -78,6 +78,7 @@ void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
 void rotate_shape(float* position, BoardCell (*board_state)[10],
                   tetromino* current_piece, int clockwise) {
   int temp_shape[4][4];
+  float temp_position[] = {position[0], position[1]};
 
   for (int i = 0; i < current_piece->rows; i++) {
     for (int j = 0; j < current_piece->cols; j++) {
@@ -90,23 +91,58 @@ void rotate_shape(float* position, BoardCell (*board_state)[10],
     }
   }
 
+  if (current_piece->rows < current_piece->cols) {
+    temp_position[1] -= 1;
+  } else {
+    temp_position[1] += 1;
+  }
+
   tetromino temp_tetromino = {.rows = current_piece->cols,
                               .cols = current_piece->rows,
                               .color = current_piece->color};
   copy_shape_matrix(temp_tetromino.shape, temp_shape, current_piece->cols,
                     current_piece->rows);
 
-  direction dir_in_place = {.horizontal = 0, .vertical = 0};
-  if (!check_collisions(position, board_state, &temp_tetromino, dir_in_place)) {
+  if (available_position(temp_position, board_state, &temp_tetromino)) {
     current_piece->cols = temp_tetromino.cols;
     current_piece->rows = temp_tetromino.rows;
     copy_shape_matrix(current_piece->shape, temp_tetromino.shape,
                       temp_tetromino.rows, temp_tetromino.cols);
 
+    position[0] = temp_position[0];
+    position[1] = temp_position[1];
+
     if ((int)position[0] + current_piece->cols > 10) {
       position[0] = 10 - current_piece->cols;
     }
   }
+}
+
+int available_position(float* temp_position, BoardCell (*board_state)[10],
+                       tetromino* temp_tetromino) {
+  direction dir_in_place = {.horizontal = 0, .vertical = 0};
+  direction dir_right = {.horizontal = 1, .vertical = 0};
+  direction dir_left = {.horizontal = -1, .vertical = 0};
+  direction dir_up = {.horizontal = 0, .vertical = -1};
+
+  if (!check_collisions(temp_position, board_state, temp_tetromino,
+                        dir_in_place)) {
+    return 1;
+  }
+  if (!check_collisions(temp_position, board_state, temp_tetromino,
+                        dir_right)) {
+    temp_position[0] += 1;
+    return 1;
+  }
+  if (!check_collisions(temp_position, board_state, temp_tetromino, dir_left)) {
+    temp_position[0] -= 1;
+    return 1;
+  }
+  if (!check_collisions(temp_position, board_state, temp_tetromino, dir_up)) {
+    temp_position[1] -= 1;
+    return 0;
+  }
+  return 0;
 }
 
 int check_collisions(float* position, BoardCell (*board_state)[10],
@@ -121,6 +157,15 @@ int check_collisions(float* position, BoardCell (*board_state)[10],
         }
         if ((int)position[1] + j + 1 >= 20) {
           return 1;  // Reached the bottom of the board
+        }
+        if ((int)position[0] + dir.horizontal < 0) {
+          return 1;  // off the left side
+        }
+        if ((int)position[0] + current_piece->cols + dir.horizontal > 10) {
+          return 1;  // off the right side
+        }
+        if ((int)position[1] < 0) {
+          return 1;  // off the top
         }
       }
     }

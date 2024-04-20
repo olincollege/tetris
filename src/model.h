@@ -37,6 +37,9 @@ void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
 void rotate_shape(float* position, BoardCell (*board_state)[10],
                   tetromino* current_piece, int clockwise);
 
+int available_position(float* temp_position, BoardCell (*board_state)[10],
+                       tetromino* temp_tetromino);
+
 int check_collisions(float* position, BoardCell (*board_state)[10],
                      tetromino* current_piece, direction dir);
 
