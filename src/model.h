@@ -49,6 +49,6 @@ void update_board(float* position, BoardCell (*board_state)[10],
 
 void update(float* position, int* current_index, int* bag,
             BoardCell (*board_state)[10], tetromino* current_piece,
-            tetromino* tetrominos);
+            tetromino* tetrominos, int* dropped);
 
 void destroy_window(SDL_Renderer* renderer);
