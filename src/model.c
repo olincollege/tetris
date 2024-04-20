@@ -185,7 +185,7 @@ int check_collisions(float* position, BoardCell (*board_state)[10],
                            .filled != 0) {
           return 1;  // Collision with another tetromino
         }
-        if ((int)position[1] + j + 1 >= 20) {
+        if ((int)position[1] + j + dir.vertical >= 20) {
           return 1;  // Reached the bottom of the board
         }
         if ((int)position[0] + dir.horizontal < 0) {
