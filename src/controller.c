@@ -47,6 +47,10 @@ void process_input(int* game_running, float* position,
             break;
           }
         }
+      } else if (event.key.keysym.sym == SDLK_z) {
+        rotate_shape(position, board_state, current_piece, 0);
+      } else if (event.key.keysym.sym == SDLK_UP) {
+        rotate_shape(position, board_state, current_piece, 1);
       }
       break;
   }

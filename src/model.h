@@ -27,12 +27,15 @@ void shuffle_bag(int* array, size_t n);
 int initialize_window(SDL_Renderer** renderer);
 
 void setup(int* bag, BoardCell (*board_state)[10], tetromino* current_piece,
-           int* current_index, tetromino* tetrominos);
+           int* current_index, tetromino* tetrominos, float* position);
 
 void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols);
 
 void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
-                       tetromino* tetrominos);
+                       tetromino* tetrominos, float* position);
+
+void rotate_shape(float* position, BoardCell (*board_state)[10],
+                  tetromino* current_piece, int clockwise);
 
 int check_collisions(float* position, BoardCell (*board_state)[10],
                      tetromino* current_piece, direction dir);

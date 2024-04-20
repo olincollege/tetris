@@ -43,14 +43,14 @@ int initialize_window(SDL_Renderer** renderer) {
 }
 
 void setup(int* bag, BoardCell (*board_state)[10], tetromino* current_piece,
-           int* current_index, tetromino* tetrominos) {
+           int* current_index, tetromino* tetrominos, float* position) {
   shuffle_bag(bag, 7);
   for (int i = 0; i < 20; i++) {
     for (int j = 0; j < 10; j++) {
       board_state[i][j].filled = 0;
     }
   }
-  set_current_piece(current_piece, current_index, bag, tetrominos);
+  set_current_piece(current_piece, current_index, bag, tetrominos, position);
 }
 
 void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols) {
@@ -62,13 +62,51 @@ void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols) {
 }
 
 void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
-                       tetromino* tetrominos) {
+                       tetromino* tetrominos, float* position) {
+  // if I piece, spawn one space lower
+  if (bag[*current_index] == 0) {
+    position[1] = 1;
+  }
   tetromino template = tetrominos[bag[*current_index]];
   current_piece->rows = template.rows;
   current_piece->cols = template.cols;
   current_piece->color = template.color;
   copy_shape_matrix(current_piece->shape, template.shape, template.rows,
                     template.cols);
+}
+
+void rotate_shape(float* position, BoardCell (*board_state)[10],
+                  tetromino* current_piece, int clockwise) {
+  int temp_shape[4][4];
+
+  for (int i = 0; i < current_piece->rows; i++) {
+    for (int j = 0; j < current_piece->cols; j++) {
+      // left (counterclockwise)
+      if (clockwise == 0) {
+        temp_shape[current_piece->cols - j - 1][i] = current_piece->shape[i][j];
+      } else {
+        temp_shape[j][current_piece->rows - i - 1] = current_piece->shape[i][j];
+      }
+    }
+  }
+
+  tetromino temp_tetromino = {.rows = current_piece->cols,
+                              .cols = current_piece->rows,
+                              .color = current_piece->color};
+  copy_shape_matrix(temp_tetromino.shape, temp_shape, current_piece->cols,
+                    current_piece->rows);
+
+  direction dir_in_place = {.horizontal = 0, .vertical = 0};
+  if (!check_collisions(position, board_state, &temp_tetromino, dir_in_place)) {
+    current_piece->cols = temp_tetromino.cols;
+    current_piece->rows = temp_tetromino.rows;
+    copy_shape_matrix(current_piece->shape, temp_tetromino.shape,
+                      temp_tetromino.rows, temp_tetromino.cols);
+
+    if ((int)position[0] + current_piece->cols > 10) {
+      position[0] = 10 - current_piece->cols;
+    }
+  }
 }
 
 int check_collisions(float* position, BoardCell (*board_state)[10],
@@ -177,7 +215,8 @@ void update(float* position, int* current_index, int* bag,
         shuffle_bag(bag, 7);
         *current_index = 0;
       }
-      set_current_piece(current_piece, current_index, bag, tetrominos);
+      set_current_piece(current_piece, current_index, bag, tetrominos,
+                        position);
     } else {
       position[1] += blocks_per_sec * delta_time;
     }

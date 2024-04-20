@@ -14,9 +14,9 @@ int main(void) {
   int bag[] = {0, 1, 2, 3, 4, 5, 6};
 
   tetromino tetrominos[7] = {// I
-                             {.rows = 2,
+                             {.rows = 1,
                               .cols = 4,
-                              .shape = {{0, 0, 0, 0}, {1, 1, 1, 1}},
+                              .shape = {{1, 1, 1, 1}},
                               .color = {.r = 0, .g = 255, .b = 255, .a = 255}},
                              // J
                              {.rows = 2,
@@ -58,7 +58,7 @@ int main(void) {
       .color = {.r = 255, .g = 255, .b = 255, .a = 255}};
 
   game_running = initialize_window(&renderer);
-  setup(bag, board_state, &current_piece, &current_index, tetrominos);
+  setup(bag, board_state, &current_piece, &current_index, tetrominos, position);
 
   while (game_running) {
     process_input(&game_running, position, board_state, &current_piece);
