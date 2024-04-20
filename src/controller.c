@@ -3,7 +3,8 @@
 #include "model.h"
 
 void process_input(int* game_running, float* position,
-                   BoardCell (*board_state)[10], tetromino* current_piece) {
+                   BoardCell (*board_state)[10], tetromino* current_piece,
+                   int* dropped) {
   SDL_Event event;
   SDL_PollEvent(&event);
 
@@ -47,6 +48,7 @@ void process_input(int* game_running, float* position,
             break;
           }
         }
+        *dropped = 1;
       }
       break;
   }

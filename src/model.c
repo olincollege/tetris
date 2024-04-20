@@ -155,11 +155,11 @@ void update_board(float* position, BoardCell (*board_state)[10],
 
 void update(float* position, int* current_index, int* bag,
             BoardCell (*board_state)[10], tetromino* current_piece,
-            tetromino* tetrominos) {
+            tetromino* tetrominos, int* dropped) {
   // delta time, converted to seconds
   float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
 
-  if (delta_time >= 1) {
+  if (delta_time >= 1 || *dropped == 1) {
     last_frame_time = SDL_GetTicks();
 
     const int blocks_per_sec = 1;
@@ -181,6 +181,7 @@ void update(float* position, int* current_index, int* bag,
     } else {
       position[1] += blocks_per_sec * delta_time;
     }
+    *dropped = 0;
   }
 }
 
