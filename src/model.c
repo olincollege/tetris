@@ -279,14 +279,6 @@ int check_completed_lines(BoardCell (*board_state)[10], size_t* score) {
       lines_cleared++;
     }
   }
-  total_lines_cleared += lines_cleared;
-  level = total_lines_cleared / 10 + 1;
-
-  if (lines_cleared != 0) {
-    *score +=
-        lines_cleared == 4 ? 800 * level : (200 * lines_cleared - 100) * level;
-  }
-
   return lines_cleared;
 }
 
@@ -317,8 +309,12 @@ void update_board(float* position, BoardCell (*board_state)[10],
   }
 
   int lines_cleared = check_completed_lines(board_state, score);
-  if (lines_cleared > 0) {
-    // add score stuff here
+  total_lines_cleared += lines_cleared;
+  level = total_lines_cleared / 10 + 1;
+
+  if (lines_cleared != 0) {
+    *score +=
+        lines_cleared == 4 ? 800 * level : (200 * lines_cleared - 100) * level;
   }
 }
 
