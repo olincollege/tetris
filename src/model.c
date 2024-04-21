@@ -2,10 +2,60 @@
 #include "model.h"
 
 #include <SDL2/SDL.h>
+#include <math.h>
 
 SDL_Window* window = NULL;
 
+int current_index = 0;
+int bag[] = {0, 1, 2, 3, 4, 5, 6};
+
+tetromino tetrominos[7] = {  // I
+    {.rows = 1,
+     .cols = 4,
+     .shape = {{1, 1, 1, 1}},
+     .color = {.r = 0, .g = 255, .b = 255, .a = 255},
+     .letter = 'I'},
+    // J
+    {.rows = 2,
+     .cols = 3,
+     .shape = {{1, 0, 0}, {1, 1, 1}},
+     .color = {.r = 0, .g = 0, .b = 255, .a = 255},
+     .letter = 'J'},
+    // L
+    {.rows = 2,
+     .cols = 3,
+     .shape = {{0, 0, 1}, {1, 1, 1}},
+     .color = {.r = 255, .g = 165, .b = 0, .a = 255},
+     .letter = 'L'},
+    // O
+    {.rows = 2,
+     .cols = 2,
+     .shape = {{1, 1}, {1, 1}},
+     .color = {.r = 255, .g = 255, .b = 0, .a = 255},
+     .letter = 'O'},
+    // S
+    {.rows = 2,
+     .cols = 3,
+     .shape = {{0, 1, 1}, {1, 1, 0}},
+     .color = {.r = 0, .g = 255, .b = 0, .a = 255},
+     .letter = 'S'},
+    // T
+    {.rows = 2,
+     .cols = 3,
+     .shape = {{0, 1, 0}, {1, 1, 1}},
+     .color = {.r = 128, .g = 0, .b = 255, .a = 255},
+     .letter = 'T'},
+    // Z
+    {.rows = 2,
+     .cols = 3,
+     .shape = {{1, 1, 0}, {0, 1, 1}},
+     .color = {.r = 255, .g = 0, .b = 0, .a = 255},
+     .letter = 'Z'}};
+
 int last_frame_time = 0;
+
+size_t level = 1;
+size_t total_lines_cleared = 0;
 
 void shuffle_bag(int* array, size_t n) {
   if (n > 1) {
@@ -42,15 +92,15 @@ int initialize_window(SDL_Renderer** renderer) {
   return 1;
 }
 
-void setup(int* bag, BoardCell (*board_state)[10], tetromino* current_piece,
-           int* current_index, tetromino* tetrominos, float* position) {
+void setup(BoardCell (*board_state)[10], tetromino* current_piece,
+           float* position) {
   shuffle_bag(bag, 7);
   for (int i = 0; i < 20; i++) {
     for (int j = 0; j < 10; j++) {
       board_state[i][j].filled = 0;
     }
   }
-  set_current_piece(current_piece, current_index, bag, tetrominos, position);
+  set_current_piece(current_piece, position);
 }
 
 void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols) {
@@ -61,13 +111,12 @@ void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols) {
   }
 }
 
-void set_current_piece(tetromino* current_piece, int* current_index, int* bag,
-                       tetromino* tetrominos, float* position) {
+void set_current_piece(tetromino* current_piece, float* position) {
   // if I piece, spawn one space lower
-  if (bag[*current_index] == 0) {
+  if (bag[current_index] == 0) {
     position[1] = 1;
   }
-  tetromino template = tetrominos[bag[*current_index]];
+  tetromino template = tetrominos[bag[current_index]];
   current_piece->rows = template.rows;
   current_piece->cols = template.cols;
   current_piece->color = template.color;
@@ -203,7 +252,7 @@ int check_collisions(float* position, BoardCell (*board_state)[10],
   return 0;  // No collisions
 }
 
-int check_completed_lines(BoardCell (*board_state)[10]) {
+int check_completed_lines(BoardCell (*board_state)[10], size_t* score) {
   int lines_cleared = 0;
 
   for (int i = 0; i < 20; i++) {
@@ -230,6 +279,13 @@ int check_completed_lines(BoardCell (*board_state)[10]) {
       lines_cleared++;
     }
   }
+  total_lines_cleared += lines_cleared;
+  level = total_lines_cleared / 10 + 1;
+
+  if (lines_cleared != 0) {
+    *score +=
+        lines_cleared == 4 ? 800 * level : (200 * lines_cleared - 100) * level;
+  }
 
   return lines_cleared;
 }
@@ -249,7 +305,7 @@ int game_over(BoardCell (*board_state)[10]) {
 }
 
 void update_board(float* position, BoardCell (*board_state)[10],
-                  tetromino* current_piece) {
+                  tetromino* current_piece, size_t* score) {
   for (int i = 0; i < current_piece->cols; i++) {
     for (int j = 0; j < current_piece->rows; j++) {
       if (current_piece->shape[j][i] == 1) {
@@ -260,41 +316,51 @@ void update_board(float* position, BoardCell (*board_state)[10],
     }
   }
 
-  int lines_cleared = check_completed_lines(board_state);
+  int lines_cleared = check_completed_lines(board_state, score);
   if (lines_cleared > 0) {
     // add score stuff here
   }
 }
 
-void update(float* position, int* current_index, int* bag,
-            BoardCell (*board_state)[10], tetromino* current_piece,
-            tetromino* tetrominos, int* dropped, int* rotation_state) {
+float get_time_int(void) {
+  float x = (float)(.8 - ((level - 1) * .007));
+  float y = (float)(level - 1);
+  float x_to_y = powf(x, y);
+
+  return x_to_y;
+}
+
+void update(float* position, BoardCell (*board_state)[10],
+            tetromino* current_piece, int* dropped, int* rotation_state,
+            size_t* score) {
   // delta time, converted to seconds
   float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
 
-  if (delta_time >= 1 || *dropped == 1) {
+  if (delta_time >= get_time_int() || *dropped == 1) {
     last_frame_time = SDL_GetTicks();
 
-    const int blocks_per_sec = 1;
+    printf("Score: %zu; ", *score);
+    printf("Total Lines Cleared: %zu; ", total_lines_cleared);
+    printf("Level: %zu; ", level);
+    printf("Time Interval: %.2f seconds.\n", get_time_int());
 
     direction dir_down = {.horizontal = 0, .vertical = 1};
     int collision =
         check_collisions(position, board_state, current_piece, dir_down);
 
     if (collision) {
-      update_board(position, board_state, current_piece);
+      update_board(position, board_state, current_piece, score);
       position[0] = 3;
       position[1] = 0;
-      (*current_index)++;
-      if (*current_index >= 7) {
+      (current_index)++;
+      if (current_index >= 7) {
         shuffle_bag(bag, 7);
-        *current_index = 0;
+        current_index = 0;
       }
-      set_current_piece(current_piece, current_index, bag, tetrominos,
-                        position);
+      set_current_piece(current_piece, position);
       *rotation_state = 0;
     } else {
-      position[1] += blocks_per_sec * delta_time;
+      position[1] += 1;
     }
     *dropped = 0;
   }

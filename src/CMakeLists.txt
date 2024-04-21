@@ -24,6 +24,7 @@ target_link_libraries(main PRIVATE view controller)
 target_link_libraries(main PUBLIC model)
 target_link_libraries(controller PUBLIC model)
 target_link_libraries(view PUBLIC model)
+target_link_libraries(model PRIVATE m)
 
 # SDL2::SDL2main may or may not be available. It is e.g. required by Windows GUI applications
 if(TARGET SDL2::SDL2main)

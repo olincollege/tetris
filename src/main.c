@@ -10,51 +10,6 @@ int main(void) {
 
   int game_running = 0;
   float position[] = {3, 0};
-  int current_index = 0;
-  int bag[] = {0, 1, 2, 3, 4, 5, 6};
-
-  tetromino tetrominos[7] = {// I
-                             {.rows = 1,
-                              .cols = 4,
-                              .shape = {{1, 1, 1, 1}},
-                              .color = {.r = 0, .g = 255, .b = 255, .a = 255},
-                              .letter = 'I'},
-                             // J
-                             {.rows = 2,
-                              .cols = 3,
-                              .shape = {{1, 0, 0}, {1, 1, 1}},
-                              .color = {.r = 0, .g = 0, .b = 255, .a = 255},
-                              .letter = 'J'},
-                             // L
-                             {.rows = 2,
-                              .cols = 3,
-                              .shape = {{0, 0, 1}, {1, 1, 1}},
-                              .color = {.r = 255, .g = 165, .b = 0, .a = 255},
-                              .letter = 'L'},
-                             // O
-                             {.rows = 2,
-                              .cols = 2,
-                              .shape = {{1, 1}, {1, 1}},
-                              .color = {.r = 255, .g = 255, .b = 0, .a = 255},
-                              .letter = 'O'},
-                             // S
-                             {.rows = 2,
-                              .cols = 3,
-                              .shape = {{0, 1, 1}, {1, 1, 0}},
-                              .color = {.r = 0, .g = 255, .b = 0, .a = 255},
-                              .letter = 'S'},
-                             // T
-                             {.rows = 2,
-                              .cols = 3,
-                              .shape = {{0, 1, 0}, {1, 1, 1}},
-                              .color = {.r = 128, .g = 0, .b = 255, .a = 255},
-                              .letter = 'T'},
-                             // Z
-                             {.rows = 2,
-                              .cols = 3,
-                              .shape = {{1, 1, 0}, {0, 1, 1}},
-                              .color = {.r = 255, .g = 0, .b = 0, .a = 255},
-                              .letter = 'Z'}};
 
   BoardCell board_state[20][10];
 
@@ -68,16 +23,18 @@ int main(void) {
 
   int dropped = 0;
 
+  size_t score = 0;
+
   game_running = initialize_window(&renderer);
-  setup(bag, board_state, &current_piece, &current_index, tetrominos, position);
+  setup(board_state, &current_piece, position);
 
   while (game_running) {
     process_input(&game_running, position, board_state, &current_piece,
-                  &dropped, &rotation_state);
+                  &dropped, &rotation_state, &score);
     if (!game_over(board_state)) {  // Check for game over condition
-      render(renderer, position, board_state, &current_piece);
-      update(position, &current_index, bag, board_state, &current_piece,
-             tetrominos, &dropped, &rotation_state);
+      render(renderer, position, board_state, &current_piece, &score);
+      update(position, board_state, &current_piece, &dropped, &rotation_state,
+             &score);
     } else {
       // Game over logic here (e.g., display game over message)
       printf("Game Over!\n");

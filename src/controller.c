@@ -4,7 +4,7 @@
 
 void process_input(int* game_running, float* position,
                    BoardCell (*board_state)[10], tetromino* current_piece,
-                   int* dropped, int* rotation_state) {
+                   int* dropped, int* rotation_state, size_t* score) {
   SDL_Event event;
   SDL_PollEvent(&event);
 
@@ -34,6 +34,7 @@ void process_input(int* game_running, float* position,
         while (
             !check_collisions(position, board_state, current_piece, dir_down)) {
           position[1] += 1;
+          *score += 1;
           break;
         }
       } else if (event.key.keysym.sym == SDLK_SPACE) {
@@ -41,6 +42,7 @@ void process_input(int* game_running, float* position,
         while (
             !check_collisions(position, board_state, current_piece, dir_down)) {
           position[1] += 1;
+          *score += 2;
           if (position[1] + current_piece->rows > 20) {
             position[1] = 20 - current_piece->rows;
             break;
