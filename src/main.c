@@ -1,11 +1,13 @@
 
 #include <stdio.h>
+#include <time.h>
 
 #include "controller.h"
 #include "model.h"
 #include "view.h"
 
 int main(void) {
+  srand(time(NULL));
   SDL_Renderer* renderer = NULL;
 
   int game_running = 0;

@@ -1,6 +1,8 @@
 #include "view.h"
 
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_ttf.h>
+#include <stdio.h>  // For sprintf
 
 #include "model.h"
 
@@ -49,6 +51,30 @@ void render(SDL_Renderer* renderer, float* position,
                          3 * SQUARE_WIDTH};
   SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
   SDL_RenderDrawRect(renderer, &shape_rect);
+  // Initialize SDL_ttf
+  TTF_Init();
+
+  // declare a TTF_Font
+  TTF_Font* font;
+  int renderstyle;
+  renderstyle = TTF_STYLE_NORMAL;
+
+  font = TTF_OpenFont("SourceSans3.ttf", 12);
+  if (font == NULL) {
+    fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
+  }
+  TTF_SetFontStyle(font, renderstyle);
+
+  // Render score text
+  SDL_Color textColor = {255, 255, 255, 255};
+  char scoreText[50];
+  sprintf(scoreText, "Score: %zu", *score);
+  SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, scoreText, textColor);
+  SDL_Texture* scoreTexture =
+      SDL_CreateTextureFromSurface(renderer, scoreSurface);
+  SDL_FreeSurface(scoreSurface);
+  SDL_RenderCopy(renderer, scoreTexture, NULL, &shape_rect);
+  SDL_DestroyTexture(scoreTexture);
 
   SDL_RenderPresent(renderer);
 }

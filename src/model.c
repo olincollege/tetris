@@ -335,11 +335,6 @@ void update(float* position, BoardCell (*board_state)[10],
   if (delta_time >= get_time_int() || *dropped == 1) {
     last_frame_time = SDL_GetTicks();
 
-    printf("Score: %zu; ", *score);
-    printf("Total Lines Cleared: %zu; ", total_lines_cleared);
-    printf("Level: %zu; ", level);
-    printf("Time Interval: %.2f seconds.\n", get_time_int());
-
     direction dir_down = {.horizontal = 0, .vertical = 1};
     int collision =
         check_collisions(position, board_state, current_piece, dir_down);
@@ -365,5 +360,6 @@ void update(float* position, BoardCell (*board_state)[10],
 void destroy_window(SDL_Renderer* renderer) {
   SDL_DestroyRenderer(renderer);
   SDL_DestroyWindow(window);
+  TTF_Quit();
   SDL_Quit();
 }
