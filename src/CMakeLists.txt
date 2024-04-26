@@ -16,7 +16,7 @@ find_package(SDL2 REQUIRED CONFIG REQUIRED COMPONENTS SDL2)
 find_package(SDL2 REQUIRED CONFIG COMPONENTS SDL2main)
 
 # Find SDL2_ttf package
-find_package(SDL2_ttf CONFIG REQUIRED)
+# find_package(SDL2_ttf CONFIG REQUIRED)
 
 # Create your game executable target as usual
 add_library(view view.c view.h)
@@ -43,4 +43,5 @@ target_link_libraries(controller PRIVATE SDL2::SDL2)
 target_link_libraries(model PRIVATE SDL2::SDL2)
 
 # Link against SDL2_ttf for the view library
-target_link_libraries(view PRIVATE SDL2_ttf::SDL2_ttf)
+target_link_libraries(view PRIVATE SDL2_ttf)
+configure_file(${CMAKE_SOURCE_DIR}/src/DejaVuSansMono.ttf ${CMAKE_BINARY_DIR}/src/DejaVuSansMono.ttf COPYONLY)
