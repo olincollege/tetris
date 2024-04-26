@@ -8,7 +8,7 @@
 
 void render(SDL_Renderer* renderer, float* position,
             BoardCell (*board_state)[10], tetromino* current_piece,
-            size_t* score) {
+            size_t* score, size_t* level) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
@@ -47,10 +47,13 @@ void render(SDL_Renderer* renderer, float* position,
     }
   }
 
-  SDL_Rect shape_rect = {12 * SQUARE_WIDTH, 2 * SQUARE_WIDTH, 4 * SQUARE_WIDTH,
-                         3 * SQUARE_WIDTH};
+  SDL_Rect shape_rect_level = {12 * SQUARE_WIDTH, 1 * SQUARE_WIDTH,
+                               4 * SQUARE_WIDTH, 1 * SQUARE_WIDTH};
+  SDL_Rect shape_rect_score = {12 * SQUARE_WIDTH, 2 * SQUARE_WIDTH,
+                               4 * SQUARE_WIDTH, 2 * SQUARE_WIDTH};
   SDL_SetRenderDrawColor(renderer, 100, 100, 100, 255);
-  SDL_RenderDrawRect(renderer, &shape_rect);
+  SDL_RenderDrawRect(renderer, &shape_rect_level);
+  SDL_RenderDrawRect(renderer, &shape_rect_score);
   // Initialize SDL_ttf
   TTF_Init();
 
@@ -70,14 +73,30 @@ void render(SDL_Renderer* renderer, float* position,
 
   // Render score text
   SDL_Color textColor = {255, 255, 255, 255};
+  char levelText[50];
   char scoreText[50];
+
+  sprintf(levelText, "Level: %zu", *level);
   sprintf(scoreText, "Score: %zu", *score);
+
+  SDL_Surface* levelSurface = TTF_RenderText_Solid(font, levelText, textColor);
   SDL_Surface* scoreSurface = TTF_RenderText_Solid(font, scoreText, textColor);
+
+  SDL_Texture* levelTexture =
+      SDL_CreateTextureFromSurface(renderer, levelSurface);
   SDL_Texture* scoreTexture =
       SDL_CreateTextureFromSurface(renderer, scoreSurface);
+
+  SDL_FreeSurface(levelSurface);
   SDL_FreeSurface(scoreSurface);
-  SDL_RenderCopy(renderer, scoreTexture, NULL, &shape_rect);
+
+  SDL_RenderCopy(renderer, levelTexture, NULL, &shape_rect_level);
+  SDL_RenderCopy(renderer, scoreTexture, NULL, &shape_rect_score);
+
+  SDL_DestroyTexture(levelTexture);
   SDL_DestroyTexture(scoreTexture);
+
   TTF_CloseFont(font);
+
   SDL_RenderPresent(renderer);
 }

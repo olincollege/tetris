@@ -25,6 +25,7 @@ int main(void) {
 
   int dropped = 0;
 
+  size_t level = 1;
   size_t score = 0;
 
   game_running = initialize_window(&renderer);
@@ -34,9 +35,9 @@ int main(void) {
     process_input(&game_running, position, board_state, &current_piece,
                   &dropped, &rotation_state, &score);
     if (!game_over(board_state)) {  // Check for game over condition
-      render(renderer, position, board_state, &current_piece, &score);
+      render(renderer, position, board_state, &current_piece, &score, &level);
       update(position, board_state, &current_piece, &dropped, &rotation_state,
-             &score);
+             &score, &level);
     } else {
       // Game over logic here (e.g., display game over message)
       printf("Game Over!\n");

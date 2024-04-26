@@ -12,7 +12,8 @@
  * each board row.
  * @param current_piece The currently falling tetromino struct.
  * @param score The current score.
+ * @param level The current level.
  */
 void render(SDL_Renderer* renderer, float* position,
             BoardCell (*board_state)[10], tetromino* current_piece,
-            size_t* score);
+            size_t* score, size_t* level);

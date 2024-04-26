@@ -54,7 +54,6 @@ tetromino tetrominos[7] = {  // I
 
 int last_frame_time = 0;
 
-size_t level = 1;
 size_t total_lines_cleared = 0;
 
 void shuffle_bag(int* array, size_t n) {
@@ -297,7 +296,7 @@ int game_over(BoardCell (*board_state)[10]) {
 }
 
 void update_board(float* position, BoardCell (*board_state)[10],
-                  tetromino* current_piece, size_t* score) {
+                  tetromino* current_piece, size_t* score, size_t* level) {
   for (int i = 0; i < current_piece->cols; i++) {
     for (int j = 0; j < current_piece->rows; j++) {
       if (current_piece->shape[j][i] == 1) {
@@ -310,17 +309,17 @@ void update_board(float* position, BoardCell (*board_state)[10],
 
   int lines_cleared = check_completed_lines(board_state, score);
   total_lines_cleared += lines_cleared;
-  level = total_lines_cleared / 10 + 1;
+  *level = total_lines_cleared / 10 + 1;
 
   if (lines_cleared != 0) {
-    *score +=
-        lines_cleared == 4 ? 800 * level : (200 * lines_cleared - 100) * level;
+    *score += lines_cleared == 4 ? 800 * (*level)
+                                 : (200 * lines_cleared - 100) * (*level);
   }
 }
 
-float get_time_int(void) {
-  float x = (float)(.8 - ((level - 1) * .007));
-  float y = (float)(level - 1);
+float get_time_int(size_t* level) {
+  float x = (float)(.8 - ((*level - 1) * .007));
+  float y = (float)(*level - 1);
   float x_to_y = powf(x, y);
 
   return x_to_y;
@@ -328,11 +327,11 @@ float get_time_int(void) {
 
 void update(float* position, BoardCell (*board_state)[10],
             tetromino* current_piece, int* dropped, int* rotation_state,
-            size_t* score) {
+            size_t* score, size_t* level) {
   // delta time, converted to seconds
   float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
 
-  if (delta_time >= get_time_int() || *dropped == 1) {
+  if (delta_time >= get_time_int(level) || *dropped == 1) {
     last_frame_time = SDL_GetTicks();
 
     direction dir_down = {.horizontal = 0, .vertical = 1};
@@ -340,7 +339,7 @@ void update(float* position, BoardCell (*board_state)[10],
         check_collisions(position, board_state, current_piece, dir_down);
 
     if (collision) {
-      update_board(position, board_state, current_piece, score);
+      update_board(position, board_state, current_piece, score, level);
       position[0] = 3;
       position[1] = 0;
       (current_index)++;

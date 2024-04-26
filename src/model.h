@@ -161,16 +161,18 @@ int game_over(BoardCell (*board_state)[10]);
  * each board row.
  * @param current_piece The currently falling tetromino struct.
  * @param score The current game score.
+ * @param level The current level.
  */
 void update_board(float* position, BoardCell (*board_state)[10],
-                  tetromino* current_piece, size_t* score);
+                  tetromino* current_piece, size_t* score, size_t* level);
 
 /**
  * Determine the time interval for the piece to fall based on the level.
  *
+ * @param level The current level.
  * @return The time interval to wait before dropping the current piece one row.
  */
-float get_time_int(void);
+float get_time_int(size_t* level);
 
 /**
  * Each time interval, drop the current piece down.
@@ -187,10 +189,11 @@ float get_time_int(void);
  * @param rotation_state A number 0 to 3 indicating the orientation of the
  * piece.
  * @param score The current game score.
+ * @param level The current level.
  */
 void update(float* position, BoardCell (*board_state)[10],
             tetromino* current_piece, int* dropped, int* rotation_state,
-            size_t* score);
+            size_t* score, size_t* level);
 
 /**
  * Destory renderer, window, and clean up SDL processes.
