@@ -78,6 +78,6 @@ void render(SDL_Renderer* renderer, float* position,
   SDL_FreeSurface(scoreSurface);
   SDL_RenderCopy(renderer, scoreTexture, NULL, &shape_rect);
   SDL_DestroyTexture(scoreTexture);
-
+  TTF_CloseFont(font);
   SDL_RenderPresent(renderer);
 }
