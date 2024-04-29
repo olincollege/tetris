@@ -62,10 +62,7 @@ void render(SDL_Renderer* renderer, float* position,
   int renderstyle;
   renderstyle = TTF_STYLE_NORMAL;
 
-  // try to get it to work with relative path within directory
-  // the ttf file should be in build/src/
-  font =
-      TTF_OpenFont("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf", 12);
+  font = TTF_OpenFont("./src/DejaVuSansMono.ttf", 12);
   if (font == NULL) {
     fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
   }
