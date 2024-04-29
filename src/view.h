@@ -14,6 +14,6 @@
  * @param score The current score.
  * @param level The current level.
  */
-void render(SDL_Renderer* renderer, float* position,
-            BoardCell (*board_state)[10], tetromino* current_piece,
-            size_t* score, size_t* level);
+void render(SDL_Renderer* renderer, const int* position,
+            BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
+            const size_t* score, const size_t* level);

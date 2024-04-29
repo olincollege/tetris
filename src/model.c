@@ -9,7 +9,7 @@ SDL_Window* window = NULL;
 int current_index = 0;
 int bag[] = {0, 1, 2, 3, 4, 5, 6};
 
-tetromino tetrominos[7] = {  // I
+const tetromino tetrominos[NUM_TETROMINOS] = {  // I
     {.rows = 1,
      .cols = 4,
      .shape = {{1, 1, 1, 1}},
@@ -70,7 +70,7 @@ void shuffle_bag(int* array, size_t n) {
 
 int initialize_window(SDL_Renderer** renderer) {
   if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-    fprintf(stderr, "Error initializing SDL.\n");
+    (void)fprintf(stderr, "Error initializing SDL.\n");
     return 0;
   }
 
@@ -78,24 +78,24 @@ int initialize_window(SDL_Renderer** renderer) {
       SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                        17 * SQUARE_WIDTH, 22 * SQUARE_WIDTH, 0);
   if (!window) {
-    fprintf(stderr, "Error creating SDL Window.\n");
+    (void)fprintf(stderr, "Error creating SDL Window.\n");
     return 0;
   }
 
   *renderer = SDL_CreateRenderer(window, -1, 0);
   if (!*renderer) {
-    fprintf(stderr, "Error creating SDL Renderer.\n");
+    (void)fprintf(stderr, "Error creating SDL Renderer.\n");
     return 0;
   }
 
   return 1;
 }
 
-void setup(BoardCell (*board_state)[10], tetromino* current_piece,
-           float* position) {
-  shuffle_bag(bag, 7);
-  for (int i = 0; i < 20; i++) {
-    for (int j = 0; j < 10; j++) {
+void setup(BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
+           int* position) {
+  shuffle_bag(bag, NUM_TETROMINOS);
+  for (int i = 0; i < NUM_ROWS; i++) {
+    for (int j = 0; j < NUM_COLS; j++) {
       board_state[i][j].filled = 0;
     }
   }
@@ -110,7 +110,7 @@ void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols) {
   }
 }
 
-void set_current_piece(tetromino* current_piece, float* position) {
+void set_current_piece(tetromino* current_piece, int* position) {
   // if I piece, spawn one space lower
   if (bag[current_index] == 0) {
     position[1] = 1;
@@ -124,12 +124,12 @@ void set_current_piece(tetromino* current_piece, float* position) {
                     template.cols);
 }
 
-void rotate_shape(float* position, BoardCell (*board_state)[10],
+void rotate_shape(int* position, BoardCell (*board_state)[NUM_COLS],
                   tetromino* current_piece, int clockwise,
                   int* rotation_state) {
   if (current_piece->letter != 'O') {
     int temp_shape[4][4];
-    float temp_position[] = {position[0], position[1]};
+    int temp_position[] = {position[0], position[1]};
 
     for (int i = 0; i < current_piece->rows; i++) {
       for (int j = 0; j < current_piece->cols; j++) {
@@ -196,7 +196,7 @@ void rotate_shape(float* position, BoardCell (*board_state)[10],
   }
 }
 
-int available_position(float* temp_position, BoardCell (*board_state)[10],
+int available_position(int* temp_position, BoardCell (*board_state)[NUM_COLS],
                        tetromino* temp_tetromino) {
   direction dir_in_place = {.horizontal = 0, .vertical = 0};
   direction dir_right = {.horizontal = 1, .vertical = 0};
@@ -223,26 +223,26 @@ int available_position(float* temp_position, BoardCell (*board_state)[10],
   return 0;
 }
 
-int check_collisions(float* position, BoardCell (*board_state)[10],
+int check_collisions(int* position, BoardCell (*board_state)[NUM_COLS],
                      tetromino* current_piece, direction dir) {
   for (int i = 0; i < current_piece->cols; i++) {
     for (int j = 0; j < current_piece->rows; j++) {
       if (current_piece->shape[j][i] == 1) {
-        if (board_state[(int)position[1] + j + dir.vertical]
-                       [(int)position[0] + i + dir.horizontal]
+        if (board_state[position[1] + j + dir.vertical]
+                       [position[0] + i + dir.horizontal]
                            .filled != 0) {
           return 1;  // Collision with another tetromino
         }
-        if ((int)position[1] + j + dir.vertical >= 20) {
+        if (position[1] + j + dir.vertical >= NUM_ROWS) {
           return 1;  // Reached the bottom of the board
         }
-        if ((int)position[0] + dir.horizontal < 0) {
+        if (position[0] + dir.horizontal < 0) {
           return 1;  // off the left side
         }
-        if ((int)position[0] + current_piece->cols + dir.horizontal > 10) {
+        if (position[0] + current_piece->cols + dir.horizontal > NUM_COLS) {
           return 1;  // off the right side
         }
-        if ((int)position[1] < 0) {
+        if (position[1] < 0) {
           return 1;  // off the top
         }
       }
@@ -251,12 +251,12 @@ int check_collisions(float* position, BoardCell (*board_state)[10],
   return 0;  // No collisions
 }
 
-int check_completed_lines(BoardCell (*board_state)[10], size_t* score) {
+int check_completed_lines(BoardCell (*board_state)[NUM_COLS]) {
   int lines_cleared = 0;
 
-  for (int i = 0; i < 20; i++) {
+  for (int i = 0; i < NUM_ROWS; i++) {
     int line_complete = 1;
-    for (int j = 0; j < 10; j++) {
+    for (int j = 0; j < NUM_COLS; j++) {
       if (board_state[i][j].filled == 0) {
         line_complete = 0;
         break;
@@ -264,12 +264,12 @@ int check_completed_lines(BoardCell (*board_state)[10], size_t* score) {
     }
 
     if (line_complete) {
-      for (int j = 0; j < 10; j++) {
+      for (int j = 0; j < NUM_COLS; j++) {
         board_state[i][j].filled = 0;
       }
 
       for (int k = i; k > 0; k--) {
-        for (int j = 0; j < 10; j++) {
+        for (int j = 0; j < NUM_COLS; j++) {
           board_state[k][j].filled = board_state[k - 1][j].filled;
           board_state[k][j].color = board_state[k - 1][j].color;
         }
@@ -281,11 +281,11 @@ int check_completed_lines(BoardCell (*board_state)[10], size_t* score) {
   return lines_cleared;
 }
 
-int game_over(BoardCell (*board_state)[10]) {
+int game_over(BoardCell (*board_state)[NUM_COLS]) {
   int game_over = 0;
 
   // Check each cell in the specified line
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < NUM_COLS; i++) {
     if (board_state[0][i].filled == 1) {
       game_over = 1;
       break;  // If any cell is filled, break the loop
@@ -295,19 +295,19 @@ int game_over(BoardCell (*board_state)[10]) {
   return game_over;
 }
 
-void update_board(float* position, BoardCell (*board_state)[10],
+void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
                   tetromino* current_piece, size_t* score, size_t* level) {
   for (int i = 0; i < current_piece->cols; i++) {
     for (int j = 0; j < current_piece->rows; j++) {
       if (current_piece->shape[j][i] == 1) {
-        board_state[(int)position[1] + j][(int)position[0] + i].filled = 1;
-        board_state[(int)position[1] + j][(int)position[0] + i].color =
+        board_state[position[1] + j][position[0] + i].filled = 1;
+        board_state[position[1] + j][position[0] + i].color =
             current_piece->color;
       }
     }
   }
 
-  int lines_cleared = check_completed_lines(board_state, score);
+  int lines_cleared = check_completed_lines(board_state);
   total_lines_cleared += lines_cleared;
   *level = total_lines_cleared / 10 + 1;
 
@@ -317,7 +317,7 @@ void update_board(float* position, BoardCell (*board_state)[10],
   }
 }
 
-float get_time_int(size_t* level) {
+float get_time_int(const size_t* level) {
   float x = (float)(.8 - ((*level - 1) * .007));
   float y = (float)(*level - 1);
   float x_to_y = powf(x, y);
@@ -325,7 +325,7 @@ float get_time_int(size_t* level) {
   return x_to_y;
 }
 
-void update(float* position, BoardCell (*board_state)[10],
+void update(int* position, BoardCell (*board_state)[NUM_COLS],
             tetromino* current_piece, int* dropped, int* rotation_state,
             size_t* score, size_t* level) {
   // delta time, converted to seconds
@@ -343,8 +343,8 @@ void update(float* position, BoardCell (*board_state)[10],
       position[0] = 3;
       position[1] = 0;
       (current_index)++;
-      if (current_index >= 7) {
-        shuffle_bag(bag, 7);
+      if (current_index >= NUM_TETROMINOS) {
+        shuffle_bag(bag, NUM_TETROMINOS);
         current_index = 0;
       }
       set_current_piece(current_piece, position);

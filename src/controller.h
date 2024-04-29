@@ -21,6 +21,6 @@
  * piece.
  * @param score The current score.
  */
-void process_input(int* game_running, float* position,
-                   BoardCell (*board_state)[10], tetromino* current_piece,
+void process_input(int* game_running, int* position,
+                   BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
                    int* dropped, int* rotation_state, size_t* score);

@@ -2,13 +2,12 @@
 
 #include "model.h"
 
-void process_input(int* game_running, float* position,
-                   BoardCell (*board_state)[10], tetromino* current_piece,
+void process_input(int* game_running, int* position,
+                   BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
                    int* dropped, int* rotation_state, size_t* score) {
   SDL_Event event;
   SDL_PollEvent(&event);
 
-  direction dir_in_place = {.horizontal = 0, .vertical = 0};
   direction dir_left = {.horizontal = -1, .vertical = 0};
   direction dir_right = {.horizontal = 1, .vertical = 0};
   direction dir_down = {.horizontal = 0, .vertical = 1};
@@ -43,8 +42,8 @@ void process_input(int* game_running, float* position,
             !check_collisions(position, board_state, current_piece, dir_down)) {
           position[1] += 1;
           *score += 2;
-          if (position[1] + current_piece->rows > 20) {
-            position[1] = 20 - current_piece->rows;
+          if (position[1] + current_piece->rows > NUM_ROWS) {
+            position[1] = NUM_ROWS - current_piece->rows;
             break;
           }
         }
