@@ -6,17 +6,16 @@
 
 #include "model.h"
 
-void render(SDL_Renderer* renderer, float* position,
-            BoardCell (*board_state)[10], tetromino* current_piece,
-            size_t* score, size_t* level) {
+void render(SDL_Renderer* renderer, const int* position,
+            BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
+            const size_t* score, const size_t* level) {
   SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
   SDL_RenderClear(renderer);
 
-  for (int i = 0; i < 10; i++) {
-    for (int j = 0; j < 20; j++) {
-      SDL_Rect shape_rect = {40 + (int)(i * SQUARE_WIDTH),
-                             40 + (int)(j * SQUARE_WIDTH), SQUARE_WIDTH,
-                             SQUARE_WIDTH};
+  for (int i = 0; i < NUM_COLS; i++) {
+    for (int j = 0; j < NUM_ROWS; j++) {
+      SDL_Rect shape_rect = {40 + (i * SQUARE_WIDTH), 40 + (j * SQUARE_WIDTH),
+                             SQUARE_WIDTH, SQUARE_WIDTH};
 
       // adding grid lines
       if (board_state[j][i].filled == 1) {
@@ -33,9 +32,9 @@ void render(SDL_Renderer* renderer, float* position,
   for (int i = 0; i < current_piece->cols; i++) {
     for (int j = 0; j < current_piece->rows; j++) {
       SDL_Rect shape_rect = {
-          40 + (int)(position[0] * SQUARE_WIDTH + i * SQUARE_WIDTH),
-          40 + (int)(position[1] * SQUARE_WIDTH + j * SQUARE_WIDTH),
-          SQUARE_WIDTH, SQUARE_WIDTH};
+          40 + (position[0] * SQUARE_WIDTH + i * SQUARE_WIDTH),
+          40 + (position[1] * SQUARE_WIDTH + j * SQUARE_WIDTH), SQUARE_WIDTH,
+          SQUARE_WIDTH};
       if (current_piece->shape[j][i] == 1) {
         SDL_SetRenderDrawColor(renderer, current_piece->color.r,
                                current_piece->color.g, current_piece->color.b,
@@ -58,13 +57,13 @@ void render(SDL_Renderer* renderer, float* position,
   TTF_Init();
 
   // declare a TTF_Font
-  TTF_Font* font;
-  int renderstyle;
+  TTF_Font* font = NULL;
+  int renderstyle = 0;
   renderstyle = TTF_STYLE_NORMAL;
 
   font = TTF_OpenFont("./src/DejaVuSansMono.ttf", 12);
   if (font == NULL) {
-    fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
+    (void)fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
   }
   TTF_SetFontStyle(font, renderstyle);
 

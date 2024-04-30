@@ -10,9 +10,9 @@ int main(void) {
   SDL_Renderer* renderer = NULL;
 
   int game_running = 0;
-  float position[] = {3, 0};
+  int position[] = {3, 0};
 
-  BoardCell board_state[20][10];
+  BoardCell board_state[NUM_ROWS][NUM_COLS];
 
   tetromino current_piece = {
       .rows = 4,

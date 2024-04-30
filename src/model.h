@@ -1,7 +1,14 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-enum { SQUARE_WIDTH = 40, SCREEN_WIDTH = 880, SCREEN_HEIGHT = 680 };
+enum {
+  SQUARE_WIDTH = 40,
+  SCREEN_WIDTH = 880,
+  SCREEN_HEIGHT = 680,
+  NUM_COLS = 10,
+  NUM_ROWS = 20,
+  NUM_TETROMINOS = 7,
+};
 
 typedef struct {
   int horizontal;
@@ -52,8 +59,8 @@ int initialize_window(SDL_Renderer** renderer);
  * @param current_piece The currently falling tetromino struct.
  * @param position An array holding the x, y position of the piece.
  */
-void setup(BoardCell (*board_state)[10], tetromino* current_piece,
-           float* position);
+void setup(BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
+           int* position);
 
 /**
  * Copy the contents of a 4x4 template matrix into a 4x4 destination matrix.
@@ -74,16 +81,37 @@ void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols);
  * @param current_piece The currently falling tetromino struct.
  * @param position An array holding the x, y position of the piece.
  */
-void set_current_piece(tetromino* current_piece, float* position);
+void set_current_piece(tetromino* current_piece, int* position);
+
+/**
+ * Set the position of the rotated piece based on its shape and oriantation.
+ *
+ * @param temp_position An array holding the x, y position of the temp piece.
+ * @param current_piece The currently falling tetromino struct.
+ * @param clockwise 1 if rotation is clockwise, 0 otherwise
+ * @param rotation_state A number 0 to 3 indicating the orientation of the
+ * piece.
+ */
+void set_temp_position(int* temp_position, tetromino* current_piece,
+                       int clockwise, const int* rotation_state);
+
+/**
+ * Update the rotation state of the piece based on the rotation direction.
+ *
+ * @param clockwise 1 if rotation is clockwise, 0 otherwise
+ * @param rotation_state A number 0 to 3 indicating the orientation of the
+ * piece.
+ */
+void set_rotation_state(int clockwise, int* rotation_state);
 
 /**
  * Rotate the shape matrix of the current tetromino piece.
  *
  * A temporary tetromino is created, and the rotation is tested with the
- * temporary piece and position. If there is space for the piece, the current
- * tetromino will be replaced with the temporary tetromino that has a rotated
- * shape matrix. The position of the tetromino is adjusted based on the type of
- * piece and which rotation state it is in.
+ * temporary piece and position. If there is space for the piece, the
+ * current tetromino will be replaced with the temporary tetromino that has
+ * a rotated shape matrix. The position of the tetromino is adjusted based
+ * on the type of piece and which rotation state it is in.
  *
  * @param position An array holding the x, y position of the piece.
  * @param board_state An array of pointers to arrays holding the contents of
@@ -93,7 +121,7 @@ void set_current_piece(tetromino* current_piece, float* position);
  * @param rotation_state A number 0 to 3 indicating the orientation of the
  * piece.
  */
-void rotate_shape(float* position, BoardCell (*board_state)[10],
+void rotate_shape(int* position, BoardCell (*board_state)[NUM_COLS],
                   tetromino* current_piece, int clockwise, int* rotation_state);
 
 /**
@@ -111,7 +139,7 @@ void rotate_shape(float* position, BoardCell (*board_state)[10],
  * @param temp_tetromino The tetromino to test the rotation on.
  * @return 1 if the shape can be rotated, 0 otherwise.
  */
-int available_position(float* temp_position, BoardCell (*board_state)[10],
+int available_position(int* temp_position, BoardCell (*board_state)[NUM_COLS],
                        tetromino* temp_tetromino);
 
 /**
@@ -124,7 +152,7 @@ int available_position(float* temp_position, BoardCell (*board_state)[10],
  * @param dir The direction to check.
  * @return 1 if collision, 0 otherwise.
  */
-int check_collisions(float* position, BoardCell (*board_state)[10],
+int check_collisions(const int* position, BoardCell (*board_state)[NUM_COLS],
                      tetromino* current_piece, direction dir);
 
 /**
@@ -138,7 +166,7 @@ int check_collisions(float* position, BoardCell (*board_state)[10],
  * @param score The current game score.
  * @return The number of lines cleard.
  */
-int check_completed_lines(BoardCell (*board_state)[10], size_t* score);
+int check_completed_lines(BoardCell (*board_state)[NUM_COLS]);
 
 /**
  * Check for game over condition.
@@ -149,7 +177,7 @@ int check_completed_lines(BoardCell (*board_state)[10], size_t* score);
  * each board row.
  * @return 1 if game is over, 0 otherwise
  */
-int game_over(BoardCell (*board_state)[10]);
+int game_over(BoardCell (*board_state)[NUM_COLS]);
 
 /**
  * Add a fallen piece to the board state and check for complete lines.
@@ -161,7 +189,7 @@ int game_over(BoardCell (*board_state)[10]);
  * @param score The current game score.
  * @param level The current level.
  */
-void update_board(float* position, BoardCell (*board_state)[10],
+void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
                   tetromino* current_piece, size_t* score, size_t* level);
 
 /**
@@ -170,7 +198,7 @@ void update_board(float* position, BoardCell (*board_state)[10],
  * @param level The current level.
  * @return The time interval to wait before dropping the current piece one row.
  */
-float get_time_int(size_t* level);
+float get_time_int(const size_t* level);
 
 /**
  * Each time interval, drop the current piece down.
@@ -189,7 +217,7 @@ float get_time_int(size_t* level);
  * @param score The current game score.
  * @param level The current level.
  */
-void update(float* position, BoardCell (*board_state)[10],
+void update(int* position, BoardCell (*board_state)[NUM_COLS],
             tetromino* current_piece, int* dropped, int* rotation_state,
             size_t* score, size_t* level);
 
