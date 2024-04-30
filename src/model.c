@@ -124,6 +124,45 @@ void set_current_piece(tetromino* current_piece, int* position) {
                     template.cols);
 }
 
+void set_temp_position(int* temp_position, tetromino* current_piece,
+                       int clockwise, const int* rotation_state) {
+  if (current_piece->rows < current_piece->cols) {
+    temp_position[1] -= 1;
+  } else {
+    temp_position[1] += 1;
+  }
+
+  if (current_piece->letter == 'I') {
+    if (*rotation_state % 2 == 0) {
+      temp_position[0] += 2;
+    } else {
+      temp_position[0] -= 2;
+    }
+  } else if (current_piece->letter == 'Z') {
+    if (*rotation_state % 2 == 0) {
+      temp_position[0] += 1;
+    } else {
+      temp_position[0] -= 1;
+    }
+  } else if (current_piece->letter == 'L' || current_piece->letter == 'J' ||
+             current_piece->letter == 'T') {
+    if (*rotation_state == 1) {
+      temp_position[0] -= 1;
+    } else if ((*rotation_state == 0 && clockwise) ||
+               (*rotation_state == 2 && !clockwise)) {
+      temp_position[0] += 1;
+    }
+  }
+}
+
+void set_rotation_state(int clockwise, int* rotation_state) {
+  if (!clockwise) {
+    *rotation_state = *rotation_state - 1 == -1 ? 3 : *rotation_state - 1;
+  } else {
+    *rotation_state = *rotation_state + 1 == 4 ? 0 : *rotation_state + 1;
+  }
+}
+
 void rotate_shape(int* position, BoardCell (*board_state)[NUM_COLS],
                   tetromino* current_piece, int clockwise,
                   int* rotation_state) {
@@ -144,33 +183,7 @@ void rotate_shape(int* position, BoardCell (*board_state)[NUM_COLS],
       }
     }
 
-    if (current_piece->rows < current_piece->cols) {
-      temp_position[1] -= 1;
-    } else {
-      temp_position[1] += 1;
-    }
-
-    if (current_piece->letter == 'I') {
-      if (*rotation_state % 2 == 0) {
-        temp_position[0] += 2;
-      } else {
-        temp_position[0] -= 2;
-      }
-    } else if (current_piece->letter == 'Z') {
-      if (*rotation_state % 2 == 0) {
-        temp_position[0] += 1;
-      } else {
-        temp_position[0] -= 1;
-      }
-    } else if (current_piece->letter == 'L' || current_piece->letter == 'J' ||
-               current_piece->letter == 'T') {
-      if (*rotation_state == 1) {
-        temp_position[0] -= 1;
-      } else if ((*rotation_state == 0 && clockwise) ||
-                 (*rotation_state == 2 && !clockwise)) {
-        temp_position[0] += 1;
-      }
-    }
+    set_temp_position(temp_position, current_piece, clockwise, rotation_state);
 
     tetromino temp_tetromino = {.rows = current_piece->cols,
                                 .cols = current_piece->rows,
@@ -187,11 +200,7 @@ void rotate_shape(int* position, BoardCell (*board_state)[NUM_COLS],
       position[0] = temp_position[0];
       position[1] = temp_position[1];
 
-      if (!clockwise) {
-        *rotation_state = *rotation_state - 1 == -1 ? 3 : *rotation_state - 1;
-      } else {
-        *rotation_state = *rotation_state + 1 == 4 ? 0 : *rotation_state + 1;
-      }
+      set_rotation_state(clockwise, rotation_state);
     }
   }
 }
@@ -223,28 +232,29 @@ int available_position(int* temp_position, BoardCell (*board_state)[NUM_COLS],
   return 0;
 }
 
-int check_collisions(int* position, BoardCell (*board_state)[NUM_COLS],
+int check_collisions(const int* position, BoardCell (*board_state)[NUM_COLS],
                      tetromino* current_piece, direction dir) {
   for (int i = 0; i < current_piece->cols; i++) {
     for (int j = 0; j < current_piece->rows; j++) {
-      if (current_piece->shape[j][i] == 1) {
-        if (board_state[position[1] + j + dir.vertical]
-                       [position[0] + i + dir.horizontal]
-                           .filled != 0) {
-          return 1;  // Collision with another tetromino
-        }
-        if (position[1] + j + dir.vertical >= NUM_ROWS) {
-          return 1;  // Reached the bottom of the board
-        }
-        if (position[0] + dir.horizontal < 0) {
-          return 1;  // off the left side
-        }
-        if (position[0] + current_piece->cols + dir.horizontal > NUM_COLS) {
-          return 1;  // off the right side
-        }
-        if (position[1] < 0) {
-          return 1;  // off the top
-        }
+      if (current_piece->shape[j][i] == 1 &&
+          board_state[position[1] + j + dir.vertical]
+                     [position[0] + i + dir.horizontal]
+                         .filled != 0) {
+        return 1;  // Collision with another tetromino
+      }
+      if (current_piece->shape[j][i] == 1 &&
+          position[1] + j + dir.vertical >= NUM_ROWS) {
+        return 1;  // Reached the bottom of the board
+      }
+      if (current_piece->shape[j][i] == 1 && position[0] + dir.horizontal < 0) {
+        return 1;  // off the left side
+      }
+      if (current_piece->shape[j][i] == 1 &&
+          position[0] + current_piece->cols + dir.horizontal > NUM_COLS) {
+        return 1;  // off the right side
+      }
+      if (current_piece->shape[j][i] == 1 && position[1] < 0) {
+        return 1;  // off the top
       }
     }
   }

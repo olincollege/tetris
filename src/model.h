@@ -82,13 +82,34 @@ void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols);
 void set_current_piece(tetromino* current_piece, int* position);
 
 /**
+ * Set the position of the rotated piece based on its shape and oriantation.
+ *
+ * @param temp_position An array holding the x, y position of the temp piece.
+ * @param current_piece The currently falling tetromino struct.
+ * @param clockwise 1 if rotation is clockwise, 0 otherwise
+ * @param rotation_state A number 0 to 3 indicating the orientation of the
+ * piece.
+ */
+void set_temp_position(int* temp_position, tetromino* current_piece,
+                       int clockwise, const int* rotation_state);
+
+/**
+ * Update the rotation state of the piece based on the rotation direction.
+ *
+ * @param clockwise 1 if rotation is clockwise, 0 otherwise
+ * @param rotation_state A number 0 to 3 indicating the orientation of the
+ * piece.
+ */
+void set_rotation_state(int clockwise, int* rotation_state);
+
+/**
  * Rotate the shape matrix of the current tetromino piece.
  *
  * A temporary tetromino is created, and the rotation is tested with the
- * temporary piece and position. If there is space for the piece, the current
- * tetromino will be replaced with the temporary tetromino that has a rotated
- * shape matrix. The position of the tetromino is adjusted based on the type of
- * piece and which rotation state it is in.
+ * temporary piece and position. If there is space for the piece, the
+ * current tetromino will be replaced with the temporary tetromino that has
+ * a rotated shape matrix. The position of the tetromino is adjusted based
+ * on the type of piece and which rotation state it is in.
  *
  * @param position An array holding the x, y position of the piece.
  * @param board_state An array of pointers to arrays holding the contents of
@@ -129,7 +150,7 @@ int available_position(int* temp_position, BoardCell (*board_state)[NUM_COLS],
  * @param dir The direction to check.
  * @return 1 if collision, 0 otherwise.
  */
-int check_collisions(int* position, BoardCell (*board_state)[NUM_COLS],
+int check_collisions(const int* position, BoardCell (*board_state)[NUM_COLS],
                      tetromino* current_piece, direction dir);
 
 /**
