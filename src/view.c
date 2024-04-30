@@ -97,3 +97,173 @@ void render(SDL_Renderer* renderer, float* position,
 
   SDL_RenderPresent(renderer);
 }
+
+void renderStartScreen(SDL_Renderer* renderer) {
+  // Clear the screen
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_RenderClear(renderer);
+
+  // Render "Game Over" text with rainbow colors
+  TTF_Init();
+  TTF_Font* font = TTF_OpenFont("./src/DejaVuSansMono.ttf", 36);
+  if (font == NULL) {
+    fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
+    return;
+  }
+
+  SDL_Rect textRect;
+  SDL_Color rainbowColors[] = {
+      {255, 0, 0, 255},    // Red
+      {255, 165, 0, 255},  // Orange
+      {255, 255, 0, 255},  // Yellow
+      {0, 128, 0, 255},    // Green
+      {0, 0, 255, 255},    // Blue
+      {75, 0, 130, 255},   // Indigo
+      {128, 0, 128, 255}   // Violet
+  };
+
+  char* startText = "TETRIS";
+  int x = (SCREEN_WIDTH - 440) / 2;  // Center the text horizontally
+  int y = SCREEN_HEIGHT / 2;         // Center the text vertically
+  SDL_RenderClear(renderer);
+
+  for (int i = 0; i < strlen(startText); i++) {
+    char* currentChar = startText[i];
+    SDL_Surface* letterSurface =
+        TTF_RenderText_Solid(font, &currentChar, rainbowColors[i % 7]);
+    SDL_Texture* letterTexture =
+        SDL_CreateTextureFromSurface(renderer, letterSurface);
+
+    SDL_QueryTexture(letterTexture, NULL, NULL, &textRect.w, &textRect.h);
+    textRect.x = x + i * 36;
+    textRect.y = y;
+
+    SDL_RenderCopy(renderer, letterTexture, NULL, &textRect);
+
+    SDL_FreeSurface(letterSurface);
+    SDL_DestroyTexture(letterTexture);
+  }
+
+  // Render "Start Game" button
+  TTF_Font* buttonFont = TTF_OpenFont("./src/DejaVuSansMono.ttf", 24);
+  if (buttonFont == NULL) {
+    fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
+    return;
+  }
+  SDL_Color textColor = {0, 0, 0, 255};
+  SDL_Surface* buttonSurface =
+      TTF_RenderText_Solid(buttonFont, "Start Game", textColor);
+  SDL_Texture* buttonTexture =
+      SDL_CreateTextureFromSurface(renderer, buttonSurface);
+
+  SDL_QueryTexture(buttonTexture, NULL, NULL, &textRect.w, &textRect.h);
+  textRect.x = (SCREEN_WIDTH - 300) / 2;
+  textRect.y = y + 50;
+
+  // Render "Start Over" button background
+  SDL_Rect buttonBackgroundRect = {textRect.x - 10, textRect.y - 5,
+                                   textRect.w + 20, textRect.h + 10};
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                         255);  // White background color
+  SDL_RenderFillRect(renderer, &buttonBackgroundRect);
+
+  // Render "Start Over" button border
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Black border color
+  SDL_RenderDrawRect(renderer, &buttonBackgroundRect);
+
+  // Render "Start Over" button text
+  SDL_RenderCopy(renderer, buttonTexture, NULL, &textRect);
+
+  // Cleanup
+  SDL_FreeSurface(buttonSurface);
+  SDL_DestroyTexture(buttonTexture);
+  TTF_CloseFont(font);
+  TTF_CloseFont(buttonFont);
+
+  SDL_RenderPresent(renderer);
+}
+
+void renderGameOverScreen(SDL_Renderer* renderer) {
+  // Clear the screen
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+  SDL_RenderClear(renderer);
+
+  // Render "Game Over" text with rainbow colors
+  TTF_Init();
+  TTF_Font* font = TTF_OpenFont("./src/DejaVuSansMono.ttf", 36);
+  if (font == NULL) {
+    fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
+    return;
+  }
+
+  SDL_Rect textRect;
+  SDL_Color rainbowColors[] = {
+      {255, 0, 0, 255},    // Red
+      {255, 165, 0, 255},  // Orange
+      {255, 255, 0, 255},  // Yellow
+      {0, 128, 0, 255},    // Green
+      {0, 0, 255, 255},    // Blue
+      {75, 0, 130, 255},   // Indigo
+      {128, 0, 128, 255}   // Violet
+  };
+
+  char* gameOverText = "GameOver";
+  int x = (SCREEN_WIDTH - 440) / 2;  // Center the text horizontally
+  int y = SCREEN_HEIGHT / 2;         // Center the text vertically
+  SDL_RenderClear(renderer);
+
+  for (int i = 0; i < strlen(gameOverText); i++) {
+    char* currentChar = gameOverText[i];
+    SDL_Surface* letterSurface =
+        TTF_RenderText_Solid(font, &currentChar, rainbowColors[i % 7]);
+    SDL_Texture* letterTexture =
+        SDL_CreateTextureFromSurface(renderer, letterSurface);
+
+    SDL_QueryTexture(letterTexture, NULL, NULL, &textRect.w, &textRect.h);
+    textRect.x = x + i * 36;
+    textRect.y = y;
+
+    SDL_RenderCopy(renderer, letterTexture, NULL, &textRect);
+
+    SDL_FreeSurface(letterSurface);
+    SDL_DestroyTexture(letterTexture);
+  }
+
+  // Render "Start Over" button
+  TTF_Font* buttonFont = TTF_OpenFont("./src/DejaVuSansMono.ttf", 24);
+  if (buttonFont == NULL) {
+    fprintf(stderr, "Failed to load font: %s\n", TTF_GetError());
+    return;
+  }
+  SDL_Color textColor = {0, 0, 0, 255};
+  SDL_Surface* buttonSurface =
+      TTF_RenderText_Solid(buttonFont, "Start Over", textColor);
+  SDL_Texture* buttonTexture =
+      SDL_CreateTextureFromSurface(renderer, buttonSurface);
+
+  SDL_QueryTexture(buttonTexture, NULL, NULL, &textRect.w, &textRect.h);
+  textRect.x = (SCREEN_WIDTH - 300) / 2;
+  textRect.y = y + 50;
+
+  // Render "Start Over" button background
+  SDL_Rect buttonBackgroundRect = {textRect.x - 10, textRect.y - 5,
+                                   textRect.w + 20, textRect.h + 10};
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255,
+                         255);  // White background color
+  SDL_RenderFillRect(renderer, &buttonBackgroundRect);
+
+  // Render "Start Over" button border
+  SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);  // Black border color
+  SDL_RenderDrawRect(renderer, &buttonBackgroundRect);
+
+  // Render "Start Over" button text
+  SDL_RenderCopy(renderer, buttonTexture, NULL, &textRect);
+
+  // Cleanup
+  SDL_FreeSurface(buttonSurface);
+  SDL_DestroyTexture(buttonTexture);
+  TTF_CloseFont(font);
+  TTF_CloseFont(buttonFont);
+
+  SDL_RenderPresent(renderer);
+}

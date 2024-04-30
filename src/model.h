@@ -1,9 +1,7 @@
 #pragma once
 #include <SDL2/SDL.h>
 
-enum {
-  SQUARE_WIDTH = 40,
-};
+enum { SQUARE_WIDTH = 40, SCREEN_WIDTH = 880, SCREEN_HEIGHT = 680 };
 
 typedef struct {
   int horizontal;

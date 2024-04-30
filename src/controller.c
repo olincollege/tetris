@@ -57,3 +57,26 @@ void process_input(int* game_running, float* position,
       break;
   }
 }
+
+void handle_mouse_click() {
+  int buttonLeft = (SCREEN_WIDTH - 300) / 2 - 50;
+  int buttonRight = buttonLeft + 300;
+  int buttonTop = SCREEN_HEIGHT / 2 + 50;
+  int buttonBottom = buttonTop + 100;
+
+  SDL_Event event;  // Initialize event
+
+  // Check for events
+  while (SDL_PollEvent(&event)) {
+    // Check if the event is a mouse button down event
+    if (event.type == SDL_MOUSEBUTTONDOWN) {
+      // Check if the mouse button down event occurred within the "Start Over"
+      // button boundaries
+      if (event.button.button == SDL_BUTTON_LEFT &&
+          event.button.x >= buttonLeft && event.button.x <= buttonRight &&
+          event.button.y >= buttonTop && event.button.y <= buttonBottom) {
+        printf("Game Over!\n");
+      }
+    }
+  }
+}

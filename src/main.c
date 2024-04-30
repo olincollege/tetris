@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <time.h>
 
@@ -30,6 +29,7 @@ int main(void) {
 
   game_running = initialize_window(&renderer);
   setup(board_state, &current_piece, position);
+  renderStartScreen(renderer);
 
   while (game_running) {
     process_input(&game_running, position, board_state, &current_piece,
@@ -40,8 +40,8 @@ int main(void) {
              &score, &level);
     } else {
       // Game over logic here (e.g., display game over message)
-      printf("Game Over!\n");
-      game_running = 0;
+      handle_mouse_click();
+      renderGameOverScreen(renderer);
     }
   }
 
