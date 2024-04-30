@@ -122,7 +122,7 @@ void renderStartScreen(SDL_Renderer* renderer) {
   };
 
   char* startText = "TETRIS";
-  int x = (SCREEN_WIDTH - 440) / 2;  // Center the text horizontally
+  int x = (SCREEN_WIDTH - 360) / 2;  // Center the text horizontally
   int y = SCREEN_HEIGHT / 2;         // Center the text vertically
   SDL_RenderClear(renderer);
 
