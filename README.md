@@ -1,6 +1,8 @@
-# tetris
+# Tetris
 
-## Rules
+## Project Description
+
+### Rules
 
 [Source - Tetris Wiki](https://tetris.fandom.com/wiki/Tetris_Guideline)
 
@@ -40,3 +42,7 @@
   - Up Arrow: rotate right
 
 - Scoring: ![Tetris Scoring](./images/tetris_controls_and_scoring.png)
+
+## Dependencies
+
+## Compiling and Running
