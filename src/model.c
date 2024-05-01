@@ -58,8 +58,7 @@ size_t total_lines_cleared = 0;
 
 void shuffle_bag(int* array, size_t n) {
   if (n > 1) {
-    size_t i;
-    for (i = 0; i < n - 1; i++) {
+    for (size_t i = 0; i < n - 1; i++) {
       size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
       int t = array[j];
       array[j] = array[i];
@@ -74,9 +73,9 @@ int initialize_window(SDL_Renderer** renderer) {
     return 0;
   }
 
-  window =
-      SDL_CreateWindow(NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                       17 * SQUARE_WIDTH, 22 * SQUARE_WIDTH, 0);
+  window = SDL_CreateWindow(
+      NULL, SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+      WINDOW_NUM_COLS * SQUARE_WIDTH, WINDOW_NUM_ROWS * SQUARE_WIDTH, 0);
   if (!window) {
     (void)fprintf(stderr, "Error creating SDL Window.\n");
     return 0;
@@ -261,8 +260,8 @@ int check_collisions(const int* position, BoardCell (*board_state)[NUM_COLS],
   return 0;  // No collisions
 }
 
-int check_completed_lines(BoardCell (*board_state)[NUM_COLS]) {
-  int lines_cleared = 0;
+size_t check_completed_lines(BoardCell (*board_state)[NUM_COLS]) {
+  size_t lines_cleared = 0;
 
   for (int i = 0; i < NUM_ROWS; i++) {
     int line_complete = 1;
@@ -317,7 +316,7 @@ void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
     }
   }
 
-  int lines_cleared = check_completed_lines(board_state);
+  size_t lines_cleared = check_completed_lines(board_state);
   total_lines_cleared += lines_cleared;
   *level = total_lines_cleared / 10 + 1;
 

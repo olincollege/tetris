@@ -6,6 +6,14 @@ enum {
   NUM_COLS = 10,
   NUM_ROWS = 20,
   NUM_TETROMINOS = 7,
+  PADDING = 1,
+  SCORE_AND_LEVEL_WIDTH = 4,
+  WINDOW_NUM_COLS = 3 * PADDING + NUM_COLS + SCORE_AND_LEVEL_WIDTH,
+  WINDOW_NUM_ROWS = 2 * PADDING + NUM_ROWS,
+  LEVEL_POS_X = 12,
+  LEVEL_POS_Y = 1,
+  SCORE_POS_X = 12,
+  SCORE_POS_Y = 2,
 };
 
 typedef struct {
@@ -164,7 +172,7 @@ int check_collisions(const int* position, BoardCell (*board_state)[NUM_COLS],
  * @param score The current game score.
  * @return The number of lines cleard.
  */
-int check_completed_lines(BoardCell (*board_state)[NUM_COLS]);
+size_t check_completed_lines(BoardCell (*board_state)[NUM_COLS]);
 
 /**
  * Check for game over condition.

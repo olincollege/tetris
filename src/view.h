@@ -3,6 +3,22 @@
 
 #include "model.h"
 
+enum {
+  BACKGROUND_R = 0,
+  BACKGROUND_G = 0,
+  BACKGROUND_B = 0,
+  BACKGROUND_A = 255,
+  LINE_R = 100,
+  LINE_G = 100,
+  LINE_B = 100,
+  LINE_A = 255,
+  TEXT_R = 255,
+  TEXT_G = 255,
+  TEXT_B = 255,
+  TEXT_A = 255,
+  FONT_SIZE = 12,
+};
+
 /**
  * Draw the contents of the board state to the SDL window.
  *
