@@ -56,3 +56,39 @@ void process_input(int* game_running, int* position,
       break;
   }
 }
+
+int handle_mouse_click(SDL_Renderer** renderer) {
+  int reset_game = 0;
+  int buttonLeft = (SCREEN_WIDTH - 300) / 2 - 50;
+  int buttonRight = buttonLeft + 300;
+  int buttonTop = SCREEN_HEIGHT / 2 + 50;
+  int buttonBottom = buttonTop + 100;
+
+  SDL_Event event;  // Initialize event
+  SDL_PollEvent(&event);
+
+  // Check for events
+  switch (event.type) {
+    case SDL_QUIT:
+      destroy_window(renderer);
+      exit(EXIT_SUCCESS);  // Exit the program directly
+
+      break;
+    case SDL_KEYDOWN:
+      if (event.key.keysym.sym == SDLK_ESCAPE) {
+        destroy_window(renderer);
+        exit(EXIT_SUCCESS);  // Exit the program directly
+      }
+      break;
+    case SDL_MOUSEBUTTONDOWN:
+      // Check if the mouse button down event occurred within the "Start
+      // Over" button boundaries
+      if (event.button.button == SDL_BUTTON_LEFT &&
+          event.button.x >= buttonLeft && event.button.x <= buttonRight &&
+          event.button.y >= buttonTop && event.button.y <= buttonBottom) {
+        reset_game = 1;
+      }
+      break;
+  }
+  return reset_game;
+}
