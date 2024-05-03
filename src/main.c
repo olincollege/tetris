@@ -44,7 +44,7 @@ int main(void) {
     process_input(&game_running, position, board_state, &current_piece,
                   &dropped, &rotation_state, &score);
     if (!game_over(board_state)) {  // Check for game over condition
-      render(renderer, position, board_state, &current_piece, &score, &level);
+      render(renderer, position, board_state, &score, &current_piece, &level);
       update(position, board_state, &current_piece, &dropped, &rotation_state,
              &score, &level, &total_lines_cleared);
     } else {

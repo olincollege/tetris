@@ -16,7 +16,11 @@ enum {
   TEXT_G = 255,
   TEXT_B = 255,
   TEXT_A = 255,
-  FONT_SIZE = 12,
+  FONT_SIZE_SCORE = 12,
+  FONT_SIZE_TETRIS = 36,
+  FONT_SIZE_BUTTON = 24,
+  STRING_BUFFER_LEN = 50,
+  MAX_COLOR_VAL = 255,
 };
 
 /**
@@ -26,10 +30,10 @@ enum {
  * @param position An array holding the x, y position of the piece.
  * @param board_state An array of pointers to arrays holding the contents of
  * each board row.
- * @param current_piece The currently falling tetromino struct.
  * @param score The current score.
+ * @param current_piece The currently falling tetromino struct.
  * @param level The current level.
  */
 void render(SDL_Renderer* renderer, const int* position,
-            BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
-            const size_t* score, const size_t* level);
+            BoardCell (*board_state)[NUM_COLS], const size_t* score,
+            tetromino* current_piece, const size_t* level);
