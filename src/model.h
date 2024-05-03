@@ -196,7 +196,7 @@ int game_over(BoardCell (*board_state)[NUM_COLS]);
  * @param current_piece The currently falling tetromino struct.
  * @param score The current game score.
  * @param level The current level.
- * @param total_lines_cleared
+ * @param total_lines_cleared The total number of lines cleared in the game.
  */
 void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
                   tetromino* current_piece, size_t* score, size_t* level,
