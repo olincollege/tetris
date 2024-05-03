@@ -196,9 +196,11 @@ int game_over(BoardCell (*board_state)[NUM_COLS]);
  * @param current_piece The currently falling tetromino struct.
  * @param score The current game score.
  * @param level The current level.
+ * @param total_lines_cleared
  */
 void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
-                  tetromino* current_piece, size_t* score, size_t* level);
+                  tetromino* current_piece, size_t* score, size_t* level,
+                  size_t* total_lines_cleared);
 
 /**
  * Determine the time interval for the piece to fall based on the level.
@@ -224,10 +226,11 @@ float get_time_int(const size_t* level);
  * piece.
  * @param score The current game score.
  * @param level The current level.
+ * @param total_lines_cleared The total number of lines cleared in the game.
  */
 void update(int* position, BoardCell (*board_state)[NUM_COLS],
             tetromino* current_piece, int* dropped, int* rotation_state,
-            size_t* score, size_t* level);
+            size_t* score, size_t* level, size_t* total_lines_cleared);
 
 /**
  * Destory renderer, window, and clean up SDL processes.

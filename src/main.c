@@ -26,6 +26,7 @@ int main(void) {
 
   size_t level = 1;
   size_t score = 0;
+  size_t total_lines_cleared = 0;
 
   initialize_window(&renderer);
   renderStartScreen(renderer);
@@ -45,7 +46,7 @@ int main(void) {
     if (!game_over(board_state)) {  // Check for game over condition
       render(renderer, position, board_state, &current_piece, &score, &level);
       update(position, board_state, &current_piece, &dropped, &rotation_state,
-             &score, &level);
+             &score, &level, &total_lines_cleared);
     } else {
       // Game over logic here (e.g., display game over message)
       renderGameOverScreen(renderer);
@@ -53,6 +54,7 @@ int main(void) {
         setup(board_state, &current_piece, position);
         score = 0;
         level = 1;
+        total_lines_cleared = 0;
       };
     }
   }

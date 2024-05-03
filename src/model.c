@@ -54,8 +54,6 @@ const tetromino tetrominos[NUM_TETROMINOS] = {  // I
 
 int last_frame_time = 0;
 
-size_t total_lines_cleared = 0;
-
 void shuffle_bag(int* array, size_t n) {
   if (n > 1) {
     for (size_t i = 0; i < n - 1; i++) {
@@ -305,7 +303,8 @@ int game_over(BoardCell (*board_state)[NUM_COLS]) {
 }
 
 void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
-                  tetromino* current_piece, size_t* score, size_t* level) {
+                  tetromino* current_piece, size_t* score, size_t* level,
+                  size_t* total_lines_cleared) {
   for (int i = 0; i < current_piece->cols; i++) {
     for (int j = 0; j < current_piece->rows; j++) {
       if (current_piece->shape[j][i] == 1) {
@@ -317,8 +316,8 @@ void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
   }
 
   size_t lines_cleared = check_completed_lines(board_state);
-  total_lines_cleared += lines_cleared;
-  *level = total_lines_cleared / 10 + 1;
+  *total_lines_cleared += lines_cleared;
+  *level = *total_lines_cleared / 10 + 1;
 
   if (lines_cleared != 0) {
     *score += lines_cleared == 4 ? 800 * (*level)
@@ -336,7 +335,7 @@ float get_time_int(const size_t* level) {
 
 void update(int* position, BoardCell (*board_state)[NUM_COLS],
             tetromino* current_piece, int* dropped, int* rotation_state,
-            size_t* score, size_t* level) {
+            size_t* score, size_t* level, size_t* total_lines_cleared) {
   // delta time, converted to seconds
   float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
 
@@ -348,7 +347,8 @@ void update(int* position, BoardCell (*board_state)[NUM_COLS],
         check_collisions(position, board_state, current_piece, dir_down);
 
     if (collision) {
-      update_board(position, board_state, current_piece, score, level);
+      update_board(position, board_state, current_piece, score, level,
+                   total_lines_cleared);
       position[0] = 3;
       position[1] = 0;
       (current_index)++;
