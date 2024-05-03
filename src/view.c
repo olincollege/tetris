@@ -166,8 +166,7 @@ void renderStartScreen(SDL_Renderer* renderer) {
   // Render "Start Over" button background
   SDL_Rect buttonBackgroundRect = {textRect.x - 10, textRect.y - 5,
                                    textRect.w + 20, textRect.h + 10};
-  SDL_SetRenderDrawColor(renderer, 255, 255, 255,
-                         255);  // White background color
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
   SDL_RenderFillRect(renderer, &buttonBackgroundRect);
 
   // Render "Start Over" button border
