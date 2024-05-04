@@ -40,6 +40,16 @@ void render(SDL_Renderer* renderer, const int* position,
             BoardCell (*board_state)[NUM_COLS], const size_t* score,
             tetromino* current_piece, const size_t* level);
 
+/**
+ * Draw the start screen to the SDL window.
+ *
+ * @param renderer The 2D rendering context for the SDL window.
+ */
 void renderStartScreen(SDL_Renderer* renderer);
 
+/**
+ * Draw the game over screen to the SDL window.
+ *
+ * @param renderer The 2D rendering context for the SDL window.
+ */
 void renderGameOverScreen(SDL_Renderer* renderer);

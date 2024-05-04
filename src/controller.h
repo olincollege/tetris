@@ -25,4 +25,13 @@ void process_input(int* game_running, BoardCell (*board_state)[NUM_COLS],
                    int* position, tetromino* current_piece, int* dropped,
                    size_t* score, int* rotation_state);
 
+/**
+ * Listen for left mouse input on top of button.
+ *
+ * Listen for SDL mousedown event. If the event happened within the bounding
+ * box of the start game / new game button, reset the game.
+ *
+ * @param renderer The 2D rendering context for the SDL window.
+ * @return 1 if the game should be reset, 0 otherwise.
+ */
 int handle_mouse_click(SDL_Renderer* renderer);
