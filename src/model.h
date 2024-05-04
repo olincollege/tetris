@@ -16,6 +16,11 @@ enum {
   LEVEL_POS_Y = 1,
   SCORE_POS_X = 12,
   SCORE_POS_Y = 2,
+  LINES_PER_LEVEL = 10,
+  FOUR_LINE_PTS = 800,
+  DOUBLE_ONE_LINE = 200,
+  ONE_LINE_OFFSET = 100,
+  MAX_COLOR_VAL = 255,
 };
 
 typedef struct {
@@ -77,11 +82,11 @@ void setup(BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
  * template matrix.
  *
  * @param dest The destination matrix.
- * @param template The template matrix.
  * @param rows The number of rows to copy.
+ * @param template The template matrix.
  * @param cols The number of columns to copy.
  */
-void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols);
+void copy_shape_matrix(int dest[4][4], int rows, int template[4][4], int cols);
 
 /**
  * Copy all fields of a template tetromino into the fields of the current piece.
@@ -220,17 +225,17 @@ float get_time_int(const size_t* level);
  * @param position An array holding the x, y position of the piece.
  * @param board_state An array of pointers to arrays holding the contents of
  * each board row.
- * @param current_piece The currently falling tetromino struct.
  * @param dropped 1 if the piece was hard dropped, 0 otherwise.
+ * @param current_piece The currently falling tetromino struct.
  * @param rotation_state A number 0 to 3 indicating the orientation of the
  * piece.
  * @param score The current game score.
  * @param level The current level.
  * @param total_lines_cleared The total number of lines cleared in the game.
  */
-void update(int* position, BoardCell (*board_state)[NUM_COLS],
-            tetromino* current_piece, int* dropped, int* rotation_state,
-            size_t* score, size_t* level, size_t* total_lines_cleared);
+void update(int* position, BoardCell (*board_state)[NUM_COLS], int* dropped,
+            tetromino* current_piece, int* rotation_state, size_t* score,
+            size_t* level, size_t* total_lines_cleared);
 
 /**
  * Destory renderer, window, and clean up SDL processes.

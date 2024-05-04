@@ -18,7 +18,10 @@ int main(void) {
       .rows = 4,
       .cols = 4,
       .shape = {{0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}, {0, 0, 0, 0}},
-      .color = {.r = 255, .g = 255, .b = 255, .a = 255},
+      .color = {.r = MAX_COLOR_VAL,
+                .g = MAX_COLOR_VAL,
+                .b = MAX_COLOR_VAL,
+                .a = MAX_COLOR_VAL},
       .letter = 'A'};
   int rotation_state = 0;
 
@@ -45,7 +48,7 @@ int main(void) {
                   &dropped, &rotation_state, &score);
     if (!game_over(board_state)) {  // Check for game over condition
       render(renderer, position, board_state, &score, &current_piece, &level);
-      update(position, board_state, &current_piece, &dropped, &rotation_state,
+      update(position, board_state, &dropped, &current_piece, &rotation_state,
              &score, &level, &total_lines_cleared);
     } else {
       // Game over logic here (e.g., display game over message)

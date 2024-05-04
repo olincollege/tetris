@@ -20,7 +20,6 @@ enum {
   FONT_SIZE_TETRIS = 36,
   FONT_SIZE_BUTTON = 24,
   STRING_BUFFER_LEN = 50,
-  MAX_COLOR_VAL = 255,
 };
 
 /**
@@ -37,3 +36,7 @@ enum {
 void render(SDL_Renderer* renderer, const int* position,
             BoardCell (*board_state)[NUM_COLS], const size_t* score,
             tetromino* current_piece, const size_t* level);
+
+void renderStartScreen(SDL_Renderer* renderer);
+
+void renderGameOverScreen(SDL_Renderer* renderer);

@@ -57,7 +57,7 @@ void process_input(int* game_running, int* position,
   }
 }
 
-int handle_mouse_click(SDL_Renderer** renderer) {
+int handle_mouse_click(SDL_Renderer* renderer) {
   int reset_game = 0;
   int buttonLeft = (SCREEN_WIDTH - 300) / 2 - 50;
   int buttonRight = buttonLeft + 300;

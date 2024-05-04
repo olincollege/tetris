@@ -52,15 +52,16 @@ const tetromino tetrominos[NUM_TETROMINOS] = {  // I
      .color = {.r = 255, .g = 0, .b = 0, .a = 255},
      .letter = 'Z'}};
 
-int last_frame_time = 0;
+float last_frame_time = 0;
 
 void shuffle_bag(int* array, size_t n) {
   if (n > 1) {
     for (size_t i = 0; i < n - 1; i++) {
-      size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
-      int t = array[j];
-      array[j] = array[i];
-      array[i] = t;
+      size_t random_int = (size_t)rand();
+      size_t swap_ind = i + random_int / (RAND_MAX / (n - i) + 1);
+      int swap_val = array[swap_ind];
+      array[swap_ind] = array[i];
+      array[i] = swap_val;
     }
   }
 }
@@ -99,7 +100,7 @@ void setup(BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
   set_current_piece(current_piece, position);
 }
 
-void copy_shape_matrix(int dest[4][4], int template[4][4], int rows, int cols) {
+void copy_shape_matrix(int dest[4][4], int rows, int template[4][4], int cols) {
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < cols; j++) {
       dest[i][j] = template[i][j];
@@ -117,7 +118,7 @@ void set_current_piece(tetromino* current_piece, int* position) {
   current_piece->cols = template.cols;
   current_piece->color = template.color;
   current_piece->letter = template.letter;
-  copy_shape_matrix(current_piece->shape, template.shape, template.rows,
+  copy_shape_matrix(current_piece->shape, template.rows, template.shape,
                     template.cols);
 }
 
@@ -185,14 +186,14 @@ void rotate_shape(int* position, BoardCell (*board_state)[NUM_COLS],
     tetromino temp_tetromino = {.rows = current_piece->cols,
                                 .cols = current_piece->rows,
                                 .color = current_piece->color};
-    copy_shape_matrix(temp_tetromino.shape, temp_shape, current_piece->cols,
+    copy_shape_matrix(temp_tetromino.shape, current_piece->cols, temp_shape,
                       current_piece->rows);
 
     if (available_position(temp_position, board_state, &temp_tetromino)) {
       current_piece->cols = temp_tetromino.cols;
       current_piece->rows = temp_tetromino.rows;
-      copy_shape_matrix(current_piece->shape, temp_tetromino.shape,
-                        temp_tetromino.rows, temp_tetromino.cols);
+      copy_shape_matrix(current_piece->shape, temp_tetromino.rows,
+                        temp_tetromino.shape, temp_tetromino.cols);
 
       position[0] = temp_position[0];
       position[1] = temp_position[1];
@@ -317,30 +318,32 @@ void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
 
   size_t lines_cleared = check_completed_lines(board_state);
   *total_lines_cleared += lines_cleared;
-  *level = *total_lines_cleared / 10 + 1;
+  *level = *total_lines_cleared / LINES_PER_LEVEL + 1;
 
   if (lines_cleared != 0) {
-    *score += lines_cleared == 4 ? 800 * (*level)
-                                 : (200 * lines_cleared - 100) * (*level);
+    *score +=
+        lines_cleared == 4
+            ? FOUR_LINE_PTS * (*level)
+            : (DOUBLE_ONE_LINE * lines_cleared - ONE_LINE_OFFSET) * (*level);
   }
 }
 
 float get_time_int(const size_t* level) {
-  float x = (float)(.8 - ((*level - 1) * .007));
-  float y = (float)(*level - 1);
-  float x_to_y = powf(x, y);
+  float base = (float)(.8 - ((*level - 1) * .007));
+  float exponent = (float)(*level - 1);
+  float res = powf(base, exponent);
 
-  return x_to_y;
+  return res;
 }
 
-void update(int* position, BoardCell (*board_state)[NUM_COLS],
-            tetromino* current_piece, int* dropped, int* rotation_state,
-            size_t* score, size_t* level, size_t* total_lines_cleared) {
+void update(int* position, BoardCell (*board_state)[NUM_COLS], int* dropped,
+            tetromino* current_piece, int* rotation_state, size_t* score,
+            size_t* level, size_t* total_lines_cleared) {
   // delta time, converted to seconds
-  float delta_time = (SDL_GetTicks() - last_frame_time) / (float)1000;
+  float delta_time = ((float)SDL_GetTicks() - last_frame_time) / (float)1000;
 
   if (delta_time >= get_time_int(level) || *dropped == 1) {
-    last_frame_time = SDL_GetTicks();
+    last_frame_time = (float)SDL_GetTicks();
 
     direction dir_down = {.horizontal = 0, .vertical = 1};
     int collision =

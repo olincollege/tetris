@@ -24,3 +24,5 @@
 void process_input(int* game_running, int* position,
                    BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
                    int* dropped, int* rotation_state, size_t* score);
+
+int handle_mouse_click(SDL_Renderer* renderer);
