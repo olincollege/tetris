@@ -1,6 +1,7 @@
 #include "controller.h"
 
 #include <SDL2/SDL.h>
+#include <pthread.h>
 
 #include "model.h"
 
@@ -73,13 +74,13 @@ int handle_mouse_click(SDL_Renderer* renderer) {
   switch (event.type) {
     case SDL_QUIT:
       destroy_window(renderer);
-      exit(EXIT_SUCCESS);  // Exit the program directly
+      pthread_exit(NULL);
 
       break;
     case SDL_KEYDOWN:
       if (event.key.keysym.sym == SDLK_ESCAPE) {
         destroy_window(renderer);
-        exit(EXIT_SUCCESS);  // Exit the program directly
+        pthread_exit(NULL);
       }
       break;
     case SDL_MOUSEBUTTONDOWN:
