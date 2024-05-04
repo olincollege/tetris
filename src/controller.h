@@ -1,6 +1,11 @@
 #pragma once
 #include "model.h"
 
+enum {
+  BUTTON_WIDTH = 300,
+  BUTTON_HEIGHT = 100,
+};
+
 /**
  * Take keyboard input and move falling tetromino accordingly.
  *
@@ -12,17 +17,17 @@
  * and if the event is a space key, drop the piece until it hits something.
  *
  * @param game_running 1 if the game is running, 0 otherwise.
- * @param position An array holding the x, y position of the piece.
  * @param board_state An array of pointers to arrays holding the contents of
  * each board row.
+ * @param position An array holding the x, y position of the piece.
  * @param current_piece The currently falling tetromino struct.
  * @param dropped 1 if the piece was hard dropped, 0 otherwise.
+ * @param score The current score.
  * @param rotation_state A number 0 to 3 indicating the orientation of the
  * piece.
- * @param score The current score.
  */
-void process_input(int* game_running, int* position,
-                   BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
-                   int* dropped, int* rotation_state, size_t* score);
+void process_input(int* game_running, BoardCell (*board_state)[NUM_COLS],
+                   int* position, tetromino* current_piece, int* dropped,
+                   size_t* score, int* rotation_state);
 
 int handle_mouse_click(SDL_Renderer* renderer);

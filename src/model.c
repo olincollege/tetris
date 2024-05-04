@@ -57,7 +57,8 @@ float last_frame_time = 0;
 void shuffle_bag(int* array, size_t n) {
   if (n > 1) {
     for (size_t i = 0; i < n - 1; i++) {
-      size_t random_int = (size_t)rand();
+      size_t random_int =
+          (size_t)rand();  // NOLINT(cert-msc30-c, cert-msc50-cpp)
       size_t swap_ind = i + random_int / (RAND_MAX / (n - i) + 1);
       int swap_val = array[swap_ind];
       array[swap_ind] = array[i];
@@ -329,7 +330,9 @@ void update_board(const int* position, BoardCell (*board_state)[NUM_COLS],
 }
 
 float get_time_int(const size_t* level) {
-  float base = (float)(.8 - ((*level - 1) * .007));
+  const float max_base = .8f;
+  const float sub_scale_factor = .007f;
+  float base = (max_base - ((float)(*level - 1) * sub_scale_factor));
   float exponent = (float)(*level - 1);
   float res = powf(base, exponent);
 
@@ -340,7 +343,8 @@ void update(int* position, BoardCell (*board_state)[NUM_COLS], int* dropped,
             tetromino* current_piece, int* rotation_state, size_t* score,
             size_t* level, size_t* total_lines_cleared) {
   // delta time, converted to seconds
-  float delta_time = ((float)SDL_GetTicks() - last_frame_time) / (float)1000;
+  float delta_time =
+      ((float)SDL_GetTicks() - last_frame_time) / (float)MS_IN_SEC;
 
   if (delta_time >= get_time_int(level) || *dropped == 1) {
     last_frame_time = (float)SDL_GetTicks();

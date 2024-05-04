@@ -1,10 +1,12 @@
+#include "controller.h"
+
 #include <SDL2/SDL.h>
 
 #include "model.h"
 
-void process_input(int* game_running, int* position,
-                   BoardCell (*board_state)[NUM_COLS], tetromino* current_piece,
-                   int* dropped, int* rotation_state, size_t* score) {
+void process_input(int* game_running, BoardCell (*board_state)[NUM_COLS],
+                   int* position, tetromino* current_piece, int* dropped,
+                   size_t* score, int* rotation_state) {
   SDL_Event event;
   SDL_PollEvent(&event);
 
@@ -59,10 +61,10 @@ void process_input(int* game_running, int* position,
 
 int handle_mouse_click(SDL_Renderer* renderer) {
   int reset_game = 0;
-  int buttonLeft = (SCREEN_WIDTH - 300) / 2 - 50;
-  int buttonRight = buttonLeft + 300;
+  int buttonLeft = (SCREEN_WIDTH - BUTTON_WIDTH) / 2 - 50;
+  int buttonRight = buttonLeft + BUTTON_WIDTH;
   int buttonTop = SCREEN_HEIGHT / 2 + 50;
-  int buttonBottom = buttonTop + 100;
+  int buttonBottom = buttonTop + BUTTON_HEIGHT;
 
   SDL_Event event;  // Initialize event
   SDL_PollEvent(&event);

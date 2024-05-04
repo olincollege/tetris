@@ -21,6 +21,7 @@ enum {
   DOUBLE_ONE_LINE = 200,
   ONE_LINE_OFFSET = 100,
   MAX_COLOR_VAL = 255,
+  MS_IN_SEC = 1000,
 };
 
 typedef struct {

@@ -6,7 +6,7 @@
 #include "view.h"
 
 int main(void) {
-  srand(time(NULL));
+  srand((unsigned int)time(NULL));
   SDL_Renderer* renderer = NULL;
 
   int game_running = 0;
@@ -44,8 +44,8 @@ int main(void) {
   };
 
   while (game_running) {
-    process_input(&game_running, position, board_state, &current_piece,
-                  &dropped, &rotation_state, &score);
+    process_input(&game_running, board_state, position, &current_piece,
+                  &dropped, &score, &rotation_state);
     if (!game_over(board_state)) {  // Check for game over condition
       render(renderer, position, board_state, &score, &current_piece, &level);
       update(position, board_state, &dropped, &current_piece, &rotation_state,
