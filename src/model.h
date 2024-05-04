@@ -22,6 +22,8 @@ enum {
   ONE_LINE_OFFSET = 100,
   MAX_COLOR_VAL = 255,
   MS_IN_SEC = 1000,
+  BUTTON_WIDTH = 300,
+  BUTTON_HEIGHT = 100,
 };
 
 typedef struct {

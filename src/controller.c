@@ -61,9 +61,9 @@ void process_input(int* game_running, BoardCell (*board_state)[NUM_COLS],
 
 int handle_mouse_click(SDL_Renderer* renderer) {
   int reset_game = 0;
-  int buttonLeft = (SCREEN_WIDTH - BUTTON_WIDTH) / 2 - 50;
+  int buttonLeft = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
   int buttonRight = buttonLeft + BUTTON_WIDTH;
-  int buttonTop = SCREEN_HEIGHT / 2 + 50;
+  int buttonTop = SCREEN_HEIGHT / 2 + (BUTTON_HEIGHT / 2);
   int buttonBottom = buttonTop + BUTTON_HEIGHT;
 
   SDL_Event event;  // Initialize event

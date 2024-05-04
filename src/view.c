@@ -126,8 +126,9 @@ void renderStartScreen(SDL_Renderer* renderer) {
   };
 
   char* startText = "TETRIS";
-  int x_game_start = (SCREEN_WIDTH - 360) / 2;  // Center the text horizontally
-  int y_game_start = SCREEN_HEIGHT / 2;         // Center the text vertically
+  int x_game_start =
+      (SCREEN_WIDTH - TETRIS_WIDTH) / 2;  // Center the text horizontally
+  int y_game_start = SCREEN_HEIGHT / 2;   // Center the text vertically
   SDL_RenderClear(renderer);
 
   for (size_t i = 0; i < strlen(startText); i++) {
@@ -138,7 +139,7 @@ void renderStartScreen(SDL_Renderer* renderer) {
         SDL_CreateTextureFromSurface(renderer, letterSurface);
 
     SDL_QueryTexture(letterTexture, NULL, NULL, &textRect.w, &textRect.h);
-    textRect.x = x_game_start + (int)i * 36;
+    textRect.x = x_game_start + (int)i * TETRIS_LETTER_WIDTH;
     textRect.y = y_game_start;
 
     SDL_RenderCopy(renderer, letterTexture, NULL, &textRect);
@@ -161,8 +162,8 @@ void renderStartScreen(SDL_Renderer* renderer) {
       SDL_CreateTextureFromSurface(renderer, buttonSurface);
 
   SDL_QueryTexture(buttonTexture, NULL, NULL, &textRect.w, &textRect.h);
-  textRect.x = (SCREEN_WIDTH - 300) / 2;
-  textRect.y = y_game_start + 50;
+  textRect.x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
+  textRect.y = y_game_start + (BUTTON_HEIGHT / 2);
 
   // Render "Start Over" button background
   SDL_Rect buttonBackgroundRect = {textRect.x - 10, textRect.y - 5,
@@ -213,8 +214,9 @@ void renderGameOverScreen(SDL_Renderer* renderer) {
   };
 
   char* gameOverText = "GameOver";
-  int x_game_over = (SCREEN_WIDTH - 440) / 2;  // Center the text horizontally
-  int y_game_over = SCREEN_HEIGHT / 2;         // Center the text vertically
+  int x_game_over =
+      (SCREEN_WIDTH - GAMEOVER_WIDTH) / 2;  // Center the text horizontally
+  int y_game_over = SCREEN_HEIGHT / 2;      // Center the text vertically
   SDL_RenderClear(renderer);
 
   for (size_t i = 0; i < strlen(gameOverText); i++) {
@@ -225,7 +227,7 @@ void renderGameOverScreen(SDL_Renderer* renderer) {
         SDL_CreateTextureFromSurface(renderer, letterSurface);
 
     SDL_QueryTexture(letterTexture, NULL, NULL, &textRect.w, &textRect.h);
-    textRect.x = x_game_over + (int)i * 36;
+    textRect.x = x_game_over + (int)i * TETRIS_LETTER_WIDTH;
     textRect.y = y_game_over;
 
     SDL_RenderCopy(renderer, letterTexture, NULL, &textRect);
@@ -248,8 +250,8 @@ void renderGameOverScreen(SDL_Renderer* renderer) {
       SDL_CreateTextureFromSurface(renderer, buttonSurface);
 
   SDL_QueryTexture(buttonTexture, NULL, NULL, &textRect.w, &textRect.h);
-  textRect.x = (SCREEN_WIDTH - 300) / 2;
-  textRect.y = y_game_over + 50;
+  textRect.x = (SCREEN_WIDTH - BUTTON_WIDTH) / 2;
+  textRect.y = y_game_over + (BUTTON_HEIGHT / 2);
 
   // Render "Start Over" button background
   SDL_Rect buttonBackgroundRect = {textRect.x - 10, textRect.y - 5,

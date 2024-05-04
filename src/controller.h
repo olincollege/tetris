@@ -1,11 +1,6 @@
 #pragma once
 #include "model.h"
 
-enum {
-  BUTTON_WIDTH = 300,
-  BUTTON_HEIGHT = 100,
-};
-
 /**
  * Take keyboard input and move falling tetromino accordingly.
  *
